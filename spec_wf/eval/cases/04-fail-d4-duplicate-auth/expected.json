@@ -1,0 +1,5 @@
+{
+  "exit_code": 1,
+  "description": "两个 spec 持有同一个 AUTH-77 — 必须触发 D4 单一所有权违例(I-E)",
+  "must_match": ["I-E/D4-auth-unique", "AUTH-77"]
+}

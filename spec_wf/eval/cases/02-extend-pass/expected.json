@@ -1,0 +1,5 @@
+{
+  "exit_code": 0,
+  "description": "extend 全绿 case:含 AUTH/既有锚/复用模块/BC 关系,所有联动约束满足",
+  "must_not_match": ["✖", "violation"]
+}

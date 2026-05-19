@@ -1,0 +1,5 @@
+{
+  "exit_code": 1,
+  "description": "extend 模式但 design.reused_modules=[],且 spec.impacted_modules=[services/legacy-auth] 未被覆盖 — 必须触发 schema 联动违例 + I-B 跨阶段违例",
+  "must_match": ["I-B/reused", "fewer than 1 items"]
+}

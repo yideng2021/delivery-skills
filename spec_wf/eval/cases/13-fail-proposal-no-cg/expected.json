@@ -1,0 +1,5 @@
+{
+  "exit_code": 1,
+  "description": "C7 反例:proposal.md 缺 clarification-gate 块,validate.mjs 应 hard fail",
+  "must_match": ["C7/clarification-gate-missing"]
+}

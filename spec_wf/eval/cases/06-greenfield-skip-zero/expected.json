@@ -1,0 +1,5 @@
+{
+  "exit_code": 0,
+  "description": "greenfield + §0 折叠声明 case:验证 v3 起 ceremonial 仪式填充被消除后仍合法",
+  "must_not_match": ["✖", "violation"]
+}

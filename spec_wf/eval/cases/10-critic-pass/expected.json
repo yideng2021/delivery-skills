@@ -1,0 +1,5 @@
+{
+  "exit_code": 0,
+  "description": "完整 critic.md 五段结构 + verdict=pass + frontmatter 合规 → validate.mjs(含 C5 钩子)全通过",
+  "must_not_match": ["✖", "violation"]
+}

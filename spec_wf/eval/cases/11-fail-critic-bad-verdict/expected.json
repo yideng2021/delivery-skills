@@ -1,0 +1,5 @@
+{
+  "exit_code": 1,
+  "description": "critic.md verdict=maybe_pass 非法 + 缺 §2~§5 四段 → validate.mjs C5 audit 钩子必须 hard fail",
+  "must_match": ["C5/critic-verdict", "C5/critic-section-missing"]
+}

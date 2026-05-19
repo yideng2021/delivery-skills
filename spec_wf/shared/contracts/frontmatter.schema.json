@@ -1,0 +1,276 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://spec-wf/contracts/frontmatter.schema.json",
+  "title": "spec_wf frontmatter 唯一数据契约 (machine-checkable)",
+  "description": "对应 shared/contracts/frontmatter-schema.md §1-§5。本文件是字段的可机械校验镜像;若与 .md 不一致以 .md 为准但应同步修订本文件。",
+
+  "$defs": {
+    "kebabCase": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "authId": {
+      "type": "string",
+      "pattern": "^AUTH-[A-Za-z0-9]+$"
+    },
+    "usId": {
+      "type": "string",
+      "pattern": "^US-[A-Za-z0-9]+$"
+    },
+    "bcName": {
+      "type": "string",
+      "pattern": "^BC-[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "specPath": {
+      "type": "string",
+      "pattern": "^(specs/[A-Za-z0-9_./-]+\\.md|[A-Za-z0-9_-]+)$"
+    },
+    "modulePath": {
+      "type": "string",
+      "minLength": 1
+    },
+    "changeVerb5": {
+      "description": "增量标注 5 项闭集",
+      "enum": ["[新增]", "[已有·仅引用]", "[已有·扩展]", "[已有·修改]", "[已有·废弃]"]
+    },
+    "bcRelation": {
+      "description": "DDD Context Map 精简词表",
+      "enum": ["沿用", "扩展", "新建", "ACL隔离", "替换"]
+    },
+    "archUsage": {
+      "enum": ["沿用", "扩展", "约束", "替换"]
+    },
+    "handoverDomain": {
+      "enum": ["database", "backend", "frontend", "integration", "infra"]
+    },
+
+    "architectureRefItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "usage"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "usage": { "$ref": "#/$defs/archUsage" }
+      }
+    },
+    "reusedModuleItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "annotation"],
+      "properties": {
+        "path": { "$ref": "#/$defs/modulePath" },
+        "annotation": { "$ref": "#/$defs/changeVerb5" }
+      }
+    },
+    "bcRelationItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bc", "relation"],
+      "properties": {
+        "bc": { "$ref": "#/$defs/bcName" },
+        "relation": { "$ref": "#/$defs/bcRelation" },
+        "refers_to": { "type": "string" }
+      },
+      "allOf": [
+        {
+          "if":   { "properties": { "relation": { "not": { "const": "新建" } } } },
+          "then": { "required": ["refers_to"] }
+        }
+      ]
+    },
+
+    "commonFields": {
+      "type": "object",
+      "properties": {
+        "change_name": { "$ref": "#/$defs/kebabCase" },
+        "status": { "enum": ["draft", "reviewed", "needs_revision", "escalated"] },
+        "change_mode": { "enum": ["greenfield", "extend", "refactor", "bugfix"] }
+      },
+      "required": ["change_name", "status"]
+    },
+
+    "proposal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "change_name", "status", "change_mode",
+        "req_ledger_state", "related_req_proposal"
+      ],
+      "properties": {
+        "change_name": { "$ref": "#/$defs/kebabCase" },
+        "status": { "enum": ["draft", "reviewed", "needs_revision", "escalated"] },
+        "change_mode": { "enum": ["greenfield", "extend", "refactor", "bugfix"] },
+        "req_ledger_state": { "enum": ["present", "missing", "skipped"] },
+        "related_req_proposal": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/authId" }
+        }
+      }
+    },
+
+    "spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "change_name", "status", "change_mode",
+        "related_req", "reference_specs",
+        "touched_capabilities", "impacted_modules", "milestone"
+      ],
+      "properties": {
+        "change_name": { "$ref": "#/$defs/kebabCase" },
+        "status": { "enum": ["draft", "reviewed", "needs_revision", "escalated"] },
+        "change_mode": { "enum": ["greenfield", "extend", "refactor", "bugfix"] },
+        "related_req": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/authId" }
+        },
+        "reference_specs": {
+          "description": "spec 视角:既有 spec 锚(增量追溯)。原 related_specs 拆分,见 v2 重命名。",
+          "type": "array",
+          "items": { "$ref": "#/$defs/specPath" }
+        },
+        "touched_capabilities": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/kebabCase" }
+        },
+        "impacted_modules": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/modulePath" }
+        },
+        "milestone": {
+          "anyOf": [
+            { "type": "string", "minLength": 1 },
+            { "const": "—" }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "change_mode": { "not": { "const": "greenfield" } } },
+            "required": ["change_mode"]
+          },
+          "then": {
+            "anyOf": [
+              { "properties": { "reference_specs":      { "minItems": 1 } } },
+              { "properties": { "touched_capabilities": { "minItems": 1 } } },
+              { "properties": { "impacted_modules":     { "minItems": 1 } } }
+            ]
+          }
+        }
+      ]
+    },
+
+    "design": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "change_name", "status", "change_mode",
+        "produced_specs", "architecture_refs",
+        "domain_modeling_level", "domain_model_mode",
+        "bounded_contexts", "reused_modules", "bc_relations"
+      ],
+      "properties": {
+        "change_name": { "$ref": "#/$defs/kebabCase" },
+        "status": { "enum": ["draft", "reviewed", "needs_revision", "escalated"] },
+        "change_mode": { "enum": ["greenfield", "extend", "refactor", "bugfix"] },
+        "produced_specs": {
+          "description": "design 视角:本 change 自产 spec 路径列表。原 related_specs 拆分。",
+          "type": "array",
+          "items": { "$ref": "#/$defs/specPath" },
+          "minItems": 1
+        },
+        "architecture_refs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/architectureRefItem" }
+        },
+        "domain_modeling_level": { "enum": ["L1", "L2", "L3"] },
+        "domain_model_mode": { "enum": ["omit", "extended"] },
+        "bounded_contexts": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/bcName" }
+        },
+        "reused_modules": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/reusedModuleItem" }
+        },
+        "bc_relations": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/bcRelationItem" }
+        }
+      },
+      "allOf": [
+        {
+          "if":   { "properties": { "domain_model_mode": { "const": "extended" } } },
+          "then": { "properties": { "domain_modeling_level": { "const": "L3" } } }
+        },
+        {
+          "if":   { "properties": { "domain_modeling_level": { "const": "L1" } } },
+          "then": {
+            "properties": {
+              "bounded_contexts": { "maxItems": 0 },
+              "bc_relations":     { "maxItems": 0 }
+            }
+          }
+        },
+        {
+          "if":   { "properties": { "domain_modeling_level": { "enum": ["L2", "L3"] } } },
+          "then": {
+            "properties": {
+              "bounded_contexts": { "minItems": 1 },
+              "bc_relations":     { "minItems": 1 }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "change_mode": { "not": { "const": "greenfield" } } },
+            "required": ["change_mode"]
+          },
+          "then": {
+            "properties": { "reused_modules": { "minItems": 1 } }
+          }
+        }
+      ]
+    },
+
+    "tasks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "change_name", "status", "related_design",
+        "domain_modeling_level", "bounded_contexts",
+        "handover_domains", "exc_status"
+      ],
+      "properties": {
+        "change_name": { "$ref": "#/$defs/kebabCase" },
+        "status": { "enum": ["draft", "reviewed", "needs_revision", "escalated"] },
+        "related_design": { "type": "string", "minLength": 1 },
+        "domain_modeling_level": { "enum": ["L1", "L2", "L3"] },
+        "bounded_contexts": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/bcName" }
+        },
+        "handover_domains": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/handoverDomain" }
+        },
+        "exc_status": { "enum": ["pending", "in_progress", "done", "writeback_failed"] },
+        "shipped_us": {
+          "description": "writeback 时由 workflow 注入;task-decomposer 不得写入",
+          "type": "array",
+          "items": { "$ref": "#/$defs/usId" }
+        }
+      }
+    }
+  },
+
+  "oneOf": [
+    { "$ref": "#/$defs/proposal" },
+    { "$ref": "#/$defs/spec" },
+    { "$ref": "#/$defs/design" },
+    { "$ref": "#/$defs/tasks" }
+  ]
+}

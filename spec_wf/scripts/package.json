@@ -1,0 +1,19 @@
+{
+  "name": "spec-wf-tooling",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "description": "spec_wf 唯一对外校验器:frontmatter schema 校验 + 跨阶段 invariant (I-A~I-F) + audit 钩子 (C1~C6)",
+  "bin": {
+    "spec-wf-validate": "./validate.mjs"
+  },
+  "scripts": {
+    "validate": "node validate.mjs",
+    "eval": "bash ../eval/eval.sh"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "js-yaml": "^4.1.0"
+  }
+}

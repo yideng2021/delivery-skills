@@ -1,0 +1,5 @@
+{
+  "exit_code": 1,
+  "description": "L3 升级但缺 <!-- l3-confirmation --> 块:schema 不察觉(L3 仍是合法值),但 validate.mjs C1 audit 钩子必须 hard fail",
+  "must_match": ["C1/l3-confirmation-missing"]
+}

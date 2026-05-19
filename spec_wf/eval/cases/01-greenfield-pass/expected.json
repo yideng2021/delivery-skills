@@ -1,0 +1,5 @@
+{
+  "exit_code": 0,
+  "description": "greenfield 全绿 case:所有字段最小合法,无既有锚/复用,validator 应通过",
+  "must_not_match": ["✖", "violation"]
+}

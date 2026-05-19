@@ -1,0 +1,5 @@
+{
+  "exit_code": 0,
+  "description": "L3 + extended 全绿 case:验证 L3/extended schema 联动 + bc_relations ACL隔离 + 2 spec 多 AUTH 单一所有权 + l3-confirmation 留痕",
+  "must_not_match": ["✖", "violation"]
+}

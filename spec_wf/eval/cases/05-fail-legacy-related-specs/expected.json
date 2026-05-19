@@ -1,0 +1,5 @@
+{
+  "exit_code": 1,
+  "description": "spec frontmatter 仍使用废弃字段 related_specs 而非 reference_specs — 必须被 schema additionalProperties:false 拒绝",
+  "must_match": ["additional properties", "reference_specs"]
+}

@@ -1,0 +1,5 @@
+{
+  "exit_code": 0,
+  "description": "Batch 2 新枚举:status=needs_revision/escalated 与 exc_status=writeback_failed 必须被 schema 接受",
+  "must_not_match": ["additional properties", "must be equal to one of"]
+}

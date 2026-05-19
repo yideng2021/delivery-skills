@@ -1,0 +1,5 @@
+{
+  "exit_code": 0,
+  "description": "C7 正例:proposal.md 含合法 clarification-gate 块(verdict=PASS),全绿通过",
+  "must_not_match": ["C7/", "✖"]
+}
