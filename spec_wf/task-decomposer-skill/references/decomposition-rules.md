@@ -54,6 +54,8 @@ L1 场景(`domain_modeling_level: L1`)Task 仅保留 4 字段:
 
 **零遗漏 + 零重复**:specs 中全部 AC / INV / US 在 §2 Task 的"覆盖 spec 条目"字段中出现且仅出现一次。
 
+**spec 文档清单**:每条 Task 的"覆盖 spec 条目"必须附带涉及的 spec 文档清单(去重,仅文件名)。目的:dev skill 拿到 Task 后可直接定位所需 spec,无需全量检索。
+
 ## §4 承接方推断规则
 
 design.frontmatter `bounded_contexts` 与 design §3 模块对外契约不直接告诉你承接方分配。task-decomposer 按以下规则推断:

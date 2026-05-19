@@ -24,7 +24,7 @@
 
 - [ ] §1 拆解上下文四项齐全:`related_design / domain_modeling_level / bounded_contexts / handover_domains` 沿用规则均显式
 - [ ] §2个 Task 的"承接方"取值是 handover-domains §1 5 个枚举之一(单选,不可"跨领域")
-- [ ] §2 每个 Task 的"覆盖 spec 条目"在 specs 中真实存在(零幽灵 AC / INV / US)
+- [ ] §2 每个 Task 的"覆盖 spec 条目"列出 AC / INV / US ID + 涉及的 spec 文档清单(去重,仅文件名)
 - [ ] §2 每个 Task 的"关联 BC"在 `bounded_contexts` 中存在(L1 场景填 `—`)
 - [ ] §2 每个 Task 的"关联 design 落点"指向 design §3 模块对外契约的具体模块
 - [ ] §2 每个 Task 的"交付定义(DoD)"用业务态语言,不出现测试命令 / 覆盖率 / 部署 / 框架名(详见 overreach-redlines)

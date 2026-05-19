@@ -24,7 +24,7 @@ exc_status: pending
 ### §2.1 Task-1 · {一句业务动机}
 
 - **承接方**:`backend`
-- **覆盖 spec 条目**:`AC-{req}-01` / `INV-1`
+- **覆盖 spec 条目**:`AC-{req}-01` / `INV-1` ← `{spec-file-1.md, spec-file-2.md}`
 - **关联 BC**:`BC-{name}`(L1 场景填 `—`)
 - **关联 design 落点**:§3 模块 `{module-name}` 对外契约
 - **交付定义(DoD)**:{一句业务态变化,不写测试命令}
@@ -32,7 +32,7 @@ exc_status: pending
 ### §2.2 Task-2 · {一句业务动机}
 
 - **承接方**:`frontend`
-- **覆盖 spec 条目**:`US-101`
+- **覆盖 spec 条目**:`US-101` ← `{spec-file.md}`
 - **关联 BC**:`—`
 - **关联 design 落点**:§3 模块 `{module-name}` 对外契约
 - **交付定义(DoD)**:{一句业务态变化}

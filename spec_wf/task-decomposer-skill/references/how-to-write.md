@@ -42,7 +42,7 @@
 每条 Task 必须按下列字段顺序写,缺一即违规:
 
 1. **承接方**:5 枚举闭集之一(单选,不可"前端+后端")
-2. **覆盖 spec 条目**:列出本 Task 承担的 AC / INV / US ID
+2. **覆盖 spec 条目**:列出本 Task 承担的 AC / INV / US ID + 涉及的 spec 文档清单(去重,仅文件名,不到章节)
 3. **关联 BC**:`bounded_contexts` 中的某个 BC(L1 场景填 `—`)
 4. **关联 design 落点**:指向 design §3 模块对外契约的具体模块
 5. **交付定义(DoD)**:一句业务态变化(详见 [`./overreach-redlines.md`](./overreach-redlines.md) 红线 1)
