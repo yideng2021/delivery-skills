@@ -1,8 +1,8 @@
 # shared/ — 跨 skill 公共契约与协议
 
-> 本目录是 v2 横切规则的**单一权威源 (SSOT)**。
+> 本目录是 spec-wf v3 横切规则的**单一权威源 (SSOT)**。
 > 所有 skill / workflow 引用本目录内规则时**仅链接**,严禁复述正文。
-> 何时引用、为何引用见 [`./protocols/progressive-disclosure.md`](./protocols/progressive-disclosure.md)。
+> 渐进披露原则见 [`./protocols/progressive-disclosure.md`](./protocols/progressive-disclosure.md)。
 
 ---
 
@@ -10,43 +10,35 @@
 
 ```
 shared/
-├── README.md                       本文件,导航与一句话用途
-├── contracts/                      静态契约(数据/枚举/口径)
-│   ├── frontmatter-schema.md
-│   ├── ac-vocabulary.md
-│   ├── empty-value-convention.md
-│   └── handover-domains.md
-└── protocols/                      行为协议(循环/协作/分层)
-    ├── cdr-protocol.md
-    └── progressive-disclosure.md
+├── README.md                              本文件,导航与一句话用途
+├── contracts/                             静态契约(数据/枚举/口径)
+│   ├── frontmatter-schema.md              20 字段权威定义(human-readable)
+│   ├── frontmatter.schema.json            20 字段权威定义(machine-checkable)
+│   ├── ac-vocabulary.md                   INV / AC / DoD 三层口径
+│   ├── change-verbs.md                    9 词统一动词表 + 5 处 sub-select
+│   ├── empty-value-convention.md          空值统一写法
+│   └── handover-domains.md                5 项承接方闭集
+├── protocols/                             行为协议(循环/协作/分层)
+│   ├── cdr-protocol.md                    注释驱动精炼 + 对话→批注转译
+│   ├── clarification-gate-protocol.md     生成前澄清闸门(CG,proposal 强制)
+│   ├── progressive-disclosure.md          SKILL.md / references / shared 三层架构
+│   └── tasks-to-todowrite.md              tasks.md → TodoWrite shadow output
+└── templates/                             跨 skill 共享骨架
+    └── writer-references-template.md      4 个 writer references/ 结构骨架
 ```
 
 ---
 
-## §2 文件索引(一句话用途)
+## §2 引用纪律
 
-| 路径 | 一句话用途 | 引用方 |
-|------|-----------|--------|
-| [`contracts/frontmatter-schema.md`](./contracts/frontmatter-schema.md) | v2 全部 frontmatter 字段的唯一权威定义(15 字段总表 + 写读流) | 4 个写手 skill / workflow / 所有模板 |
-| [`contracts/ac-vocabulary.md`](./contracts/ac-vocabulary.md) | INV-x / AC-xxx-xx / DoD 三层验收口径权威 | spec-writer / task-decomposer |
-| [`contracts/empty-value-convention.md`](./contracts/empty-value-convention.md) | 空值表达统一约定(`[]` / `—`) | 4 个写手 skill / 所有模板 |
-| [`contracts/handover-domains.md`](./contracts/handover-domains.md) | `handover_domains` 字段取值闭集(5 枚举) | task-decomposer / 下游 dev skill |
-| [`protocols/cdr-protocol.md`](./protocols/cdr-protocol.md) | 注释驱动精炼协议(循环步骤 / 批注语法 / 退出条件) | 4 个写手 skill |
-| [`protocols/progressive-disclosure.md`](./protocols/progressive-disclosure.md) | SKILL.md / references/ / shared/ 三层架构与规则下沉判定 | 4 个写手 skill / workflow / shared 内部 |
-
----
-
-## §3 引用纪律
-
-- **链接而非复述**:任何 skill / workflow / 模板需要使用上述规则时,使用 markdown 相对链接到具体章节。
+- **链接而非复述**:任何 skill / workflow / 模板需要使用上述规则时,使用 markdown 相对链接到具体章节,不抄正文。
 - **单一权威源**:同一规则不得在多处定义;新增横切规则前先确认该规则不在 shared/ 已有文件中。
-- **禁令清单**:见 [`../conventions.md`](../conventions.md) §7 Hard Bans。
-- **新增 shared 文件流程**:必须先回到 Stage 1 计划([`../plan/stage-1-shared.md`](../plan/stage-1-shared.md))扩充本 README 与对应文件,再供下游引用。
+- **新增 shared 文件流程**:更新本 README 目录树 + 在对应文件落地 + 同步更新 [`../spec-wf总结.md`](../spec-wf总结.md) §三 目录结构与 §七 横切机制小节。
 
 ---
 
-## §4 与外部文档的关系
+## §3 与外部文档的关系
 
-- 全局约定(目录命名、术语、规模预算等) → [`../conventions.md`](../conventions.md)
-- 阶段计划与交接 → [`../plan/`](../plan/)
-- 重构主索引 → [`../00-master-plan.md`](../00-master-plan.md)
+- 设计原理总览 → [`../spec-wf总结.md`](../spec-wf总结.md)
+- 维护者指南(schema 演进 / 回归测试) → [`../MAINTENANCE.md`](../MAINTENANCE.md)
+- 用户上手指南 → [`../USER-GUIDE.md`](../USER-GUIDE.md)
