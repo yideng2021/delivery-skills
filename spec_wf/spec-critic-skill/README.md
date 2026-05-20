@@ -1,7 +1,7 @@
 # spec-critic-skill
 
-> LLM-as-Judge 反向审查 skill,对 4 个 writer 的产出做软审查 + 输出 `pass / needs_revision / escalated` 三态裁决。
-> Batch 3 引入,补足 audit 末尾兜底的负担。
+> LLM-as-Judge 反向审查 skill,对 4 个 writer 的产出做「**默认启用、可显式豁免的软门**」+ 输出 `pass / needs_revision / escalated` 三态裁决。
+> Batch 3 引入,补足 audit 末尾兜底的负担。术语「软门」由 [`SKILL.md`](./SKILL.md) §角色定位单点定义。
 
 详见 [`SKILL.md`](./SKILL.md) 与 [`references/critic-protocol.md`](./references/critic-protocol.md)。
 
@@ -17,6 +17,6 @@
 # 机械检查:扫一个 change
 node scripts/validate.mjs docs/spec/{change_name}/
 
-# critic 软审查由 spec-design-workflow 自动触发,或用户在 chat 中:
+# critic 软门审查由 spec-design-workflow 自动触发,或用户在 chat 中:
 # > 请对 docs/spec/{change_name}/design.md 做 critic
 ```

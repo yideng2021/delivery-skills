@@ -96,7 +96,7 @@ graph LR
 | guard 触发拆分 | 路由到外部 change-decomposition-skill,本次 change 终止 |
 | `tasks.exc_status` 长期停留 `in_progress` | workflow 不主动干预(由 dev skill 自驱);CDR 在阶段内闭环 |
 
-> workflow 不参与 CDR(C1-5),不诊断阶段内卡死。
+> workflow 不参与 CDR(C1-5),不读 CDR 批注内容;阶段内卡死的判定与降级由 [`./failure-recovery.md`](./failure-recovery.md) §5 单点权威定义(基于 frontmatter 字段被动判定)。
 
 ---
 

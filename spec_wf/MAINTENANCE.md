@@ -16,14 +16,14 @@ node scripts/validate.mjs <change-dir>
 它合并了三层校验能力:
 - 单文件 frontmatter schema 校验
 - 跨阶段 invariant (I-A ~ I-F)
-- audit 钩子 (C1 ~ C6,含 L3 留痕 / writeback 注释 / critic 格式 / needs_revision 老化)
+- audit 钩子 (C1 ~ C7,含 L3 留痕 / writeback 注释 / critic 格式 / needs_revision 老化 / CG 闸门留痕)
 
 维护者额外可用:
 
 | 工具 | 位置 | 用途 |
 |------|------|------|
-| 回归测试 runner | [`eval/eval.sh`](eval/eval.sh) | 跑 [`eval/cases/`](eval/cases) 下 11 个 golden case,验证 schema/validator 改动未破坏既有规则 |
-| Golden cases | [`eval/cases/`](eval/cases) | 11 个可执行的"规则说明书";case name 本身就是规则索引 |
+| 回归测试 runner | [`eval/eval.sh`](eval/eval.sh) | 跑 [`eval/cases/`](eval/cases) 下 13 个 golden case,验证 schema/validator 改动未破坏既有规则 |
+| Golden cases | [`eval/cases/`](eval/cases) | 13 个可执行的"规则说明书";case name 本身就是规则索引 |
 
 ---
 
@@ -52,16 +52,16 @@ bash skills/spec_wf/eval/eval.sh
   ✓ 02-extend-pass
   ✓ 03-fail-extend-missing-reused
   ...
-  ✓ 11-fail-critic-bad-verdict
+  ✓ 13-fail-proposal-no-cg
 
-eval 结果: 11 通过 / 0 失败 / 11 总数
+eval 结果: 13 通过 / 0 失败 / 13 总数
 ```
 
 任一 case fail,会打印 validator 输出 + 期望偏差,据此回查 schema/validator 改动。
 
 ---
 
-## 三、Golden Cases 索引(11 个)
+## 三、Golden Cases 索引(13 个)
 
 每个 case 是一个最小 change 目录 + `expected.json`(声明期望的 exit_code、`must_match`、`must_not_match`)。
 
@@ -78,14 +78,16 @@ eval 结果: 11 通过 / 0 失败 / 11 总数
 | 09-fail-l3-no-confirmation | C1 反例:L3 但缺 `<!-- l3-confirmation -->` 块 |
 | 10-critic-pass | critic.md 五段结构合法(C5) |
 | 11-fail-critic-bad-verdict | C5 反例:critic.md verdict 非法 |
+| 12-proposal-cg-pass | C7 正例:proposal 含完整 `<!-- clarification-gate -->` 块 |
+| 13-fail-proposal-no-cg | C7 反例:proposal 缺 CG 留痕块 |
 
 > 新增规则时,建议**先在 [`eval/cases/`](eval/cases) 加一个 fail 案例**,确认 fail 之后再去改 validator——TDD 风格。
 
 ---
 
-## 四、Audit 钩子设计原则(C1 ~ C6 演进规约)
+## 四、Audit 钩子设计原则(C1 ~ C7 演进规约)
 
-C1 ~ C6 是 schema 抓不到的"软契约":
+C1 ~ C7 是 schema 抓不到的"软契约":
 
 | 钩子 | 抓什么 |
 |------|--------|
@@ -95,6 +97,7 @@ C1 ~ C6 是 schema 抓不到的"软契约":
 | **C4** | `exc_status=writeback_failed` 须有 `<!-- writeback-failure: ... -->` 注释 |
 | **C5** | critic.md 五段格式 + frontmatter 必填 4 字段 |
 | **C6** | needs_revision 持续 > 14 天 → soft 警告 |
+| **C7** | proposal.md 必须含 `<!-- clarification-gate -->` 留痕块 + verdict / qa 字段完整 |
 
 **新增 C 钩子的规约**:
 1. 必须能被脚本机械判定(正则 / 结构化解析,**不能**调 LLM)
@@ -127,7 +130,7 @@ C1 ~ C6 是 schema 抓不到的"软契约":
 
 ## 七、不再维护的旧工具(历史记录)
 
-- `scripts/critic-checks.mjs` — 已并入 [`scripts/validate.mjs`](scripts/validate.mjs) 的 C1 ~ C6 段
+- `scripts/critic-checks.mjs` — 已并入 [`scripts/validate.mjs`](scripts/validate.mjs) 的 audit 钩子段(C1 ~ C7)
 - `scripts/estimate.mjs` — 已删除(成本预估改由 LLM 在 proposal 阶段粗估)
 - `shared/protocols/cost-model.md` — 随 estimate.mjs 一并删除
 
@@ -152,7 +155,7 @@ C1 ~ C6 是 schema 抓不到的"软契约":
 
 1. **字段拆分铁律** — `reference_specs`(spec 视角=既有锚) / `produced_specs`(design 视角=自产路径) 不可合并回 `related_specs`;`additionalProperties: false` 在生成边界即拒绝旧字段
 2. **9 词统一动词词表** — 增量标注 / change_mode 等 5 处枚举的语义来源已收敛到 [`shared/contracts/change-verbs.md`](shared/contracts/change-verbs.md),新增枚举必须从该词表 sub-select,不允许自创
-3. **失败必降级,不甩锅** — workflow 任何失败状态必须落到 frontmatter 字段(`needs_revision` / `escalated` / `writeback_failed`),不允许仅以日志或对话表�;详见 [`spec-design-workflow/references/failure-recovery.md`](spec-design-workflow/references/failure-recovery.md)
+3. **失败必降级,不甩锅** — workflow 任何失败状态必须落到 frontmatter 字段(`needs_revision` / `escalated` / `writeback_failed`),不允许仅以日志或对话表达;详见 [`spec-design-workflow/references/failure-recovery.md`](spec-design-workflow/references/failure-recovery.md)
 4. **L3 必经 ToolCall 确认门** — skill 严禁单方面把 `domain_modeling_level` 升 L3,详见 [`design-writer-skill/references/depth-confirmation.md`](design-writer-skill/references/depth-confirmation.md);C1 钩子机械校验留痕
 5. **SKILL.md 入口 ≤ 65 行** — 渐进披露的硬指标,新增能力时优先下沉到 references/,不堆 SKILL.md
 

@@ -47,6 +47,6 @@ workflow 自身**不产出**任何业务文档;它只在阶段切换时:
 
 - 不规定 skill 内规则、不定义 frontmatter 字段语义、不参与 CDR(注释驱动精炼)
 - 不调用 RBK 命令、不直接写项目级账本
-- 不诊断阶段内卡死(由用户与各 skill 自治判断)
+- 不读 CDR 批注内容、不读产物正文(阶段内卡死的判定与降级见 [`references/failure-recovery.md`](./references/failure-recovery.md),workflow 仅基于 frontmatter 字段被动转移)
 
 详细的"边界与禁令"见 [`WORKFLOW.md`](./WORKFLOW.md) §严禁事项。

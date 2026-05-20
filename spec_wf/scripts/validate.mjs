@@ -30,7 +30,7 @@
  *        `<!-- writeback-failure: ... -->` 注释
  *     C5 critic.md(若存在)必须含 §1~§5 五段 + frontmatter 必填 4 字段
  *     C6 任一文件 status == needs_revision 持续 > 14 天 → soft 警告
- *     C7 proposal.md 必须含 `<!-- clarification-gate -->` 块(CG 闸门留痕);
+ *     C7 proposal.md 与 specs/*.md 必须含 `<!-- clarification-gate -->` 块(CG 闸门留痕);
  *        块内 verdict ∈ {PASS, ABORTED};ABORTED 必须含 skip_reason
  *
  * 退出码:
@@ -404,6 +404,44 @@ function checkAuditHooks(docs, violations) {
           file: docs.proposal,
         });
       }
+    }
+  }
+
+  // ---- C7: specs/*.md CG 闸门留痕(P0 spec hard fail;允许 qa:[]) ----
+  for (const specPath of (docs.specs || [])) {
+    if (!existsSync(specPath)) continue;
+    const spec = readDoc(specPath);
+    const cg = parseCgBlock(spec.text);
+    if (!cg) {
+      violations.push({
+        severity: "hard", kind: "C7/clarification-gate-missing",
+        msg: `${specPath} 缺 <!-- clarification-gate --> 块(违反 CG 闸门;参 shared/protocols/clarification-gate-protocol.md §10)`,
+        file: specPath,
+      });
+      continue;
+    }
+    for (const k of ["stage", "ts", "turn", "verdict"]) {
+      if (!(k in cg)) {
+        violations.push({
+          severity: "hard", kind: "C7/clarification-gate-field-missing",
+          msg: `clarification-gate 块缺字段: ${k}`,
+          file: specPath,
+        });
+      }
+    }
+    if (cg.verdict && !["PASS", "ABORTED"].includes(cg.verdict)) {
+      violations.push({
+        severity: "hard", kind: "C7/clarification-gate-verdict",
+        msg: `clarification-gate verdict 非法: ${cg.verdict}(期望 PASS 或 ABORTED;NEEDS_MORE 仅中间态)`,
+        file: specPath,
+      });
+    }
+    if (cg.verdict === "ABORTED" && !("skip_reason" in cg)) {
+      violations.push({
+        severity: "hard", kind: "C7/clarification-gate-skip-reason",
+        msg: "clarification-gate verdict=ABORTED 但缺 skip_reason 字段",
+        file: specPath,
+      });
     }
   }
 

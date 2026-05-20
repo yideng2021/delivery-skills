@@ -1,4 +1,4 @@
----
+﻿---
 change_name: cg-demo
 status: reviewed
 change_mode: extend
@@ -8,5 +8,13 @@ touched_capabilities: [auth]
 impacted_modules: [services/user-service]
 milestone: v1.2
 ---
+
+<!-- clarification-gate
+stage: spec
+ts: 2026-05-18T10:00
+turn: 1
+verdict: PASS
+qa: []
+-->
 
 # Spec — cg-demo (extend)

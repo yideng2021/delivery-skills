@@ -63,9 +63,11 @@ writeback 阶段(workflow 写 `shipped_us`)出现下列任一即触发 F3:
 
 ## §5 cdr_stuck 阈值与豁免
 
-- 默认阈值 = 6 轮(经验值,与 [`../../shared/protocols/cdr-protocol.md`](../../shared/protocols/cdr-protocol.md) §3 「无上限」并不冲突,本节是 workflow 视角的人工介入触发线)
+> **口径权威(对齐 README / WORKFLOW / 本节)**:workflow **不读 CDR 批注内容**,仅基于 frontmatter 字段被动判定。CDR 轮次由各 skill 在阶段内自治计数,workflow 只读其结果(`status` + 轮次字段),不参与轮次的产生与消化。
+
+- 默认阈值 = 6 轮(经验值,与 [`../../shared/protocols/cdr-protocol.md`](../../shared/protocols/cdr-protocol.md) §3「无上限」并不冲突,本节是 workflow 视角的人工介入触发线)
 - 用户可在 proposal frontmatter 添加 `cdr_loop_threshold: <int>` 显式覆盖(可选字段,未在 schema 强制)
-- 阈值定义为「workflow 观察到的连续未通过 CDR 退出条件的批注循环次数」;一旦 `status: reviewed`,计数归零
+- 阈值的可机械读取来源:由各 skill 在 frontmatter 维护的 CDR 轮次记录(具体字段在 [`../../shared/contracts/frontmatter-schema.md`](../../shared/contracts/frontmatter-schema.md));`status: reviewed` 后计数归零
 
 ---
 

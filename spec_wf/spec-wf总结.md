@@ -1,6 +1,6 @@
 # spec-wf 总览(v3)
 
-> 一份 AI 辅助开发的**四步规约工作流 + 软审查 + 工程脚本**的 skill 组合:把"想做什么"逐层翻译为"该如何做",每一步强制做**增量优先 + 既有资产复用**的显式标记;最终把规约文档作为代码生成的唯一真理来源,并配套 deterministic 校验器与 LLM-as-Judge 软审查双轨兜底。
+> 一份 AI 辅助开发的**四步规约工作流 + 软门审查 + 工程脚本**的 skill 组合:把"想做什么"逐层翻译为"该如何做",每一步强制做**增量优先 + 既有资产复用**的显式标记;最终把规约文档作为代码生成的唯一真理来源,并配套 deterministic 校验器与 LLM-as-Judge 软门双轨兜底。术语「软门」由 [`spec-critic-skill/SKILL.md`](spec-critic-skill/SKILL.md) §角色定位单点定义。
 
 ---
 
@@ -40,7 +40,7 @@ spec_wf/
 ├── spec-writer-skill/              # 阶段二:业务规约
 ├── design-writer-skill/            # 阶段三:架构契约(含 L3 ToolCall 确认门)
 ├── task-decomposer-skill/          # 阶段四:工单拆解(可 shadow 出 TodoWrite)
-├── spec-critic-skill/              # 软审查(LLM-as-Judge,三态裁决)
+├── spec-critic-skill/              # 软门(LLM-as-Judge,三态裁决)
 ├── requirements-bookkeeping-skill/ # 项目级账本(REQUIREMENTS.md / ROADMAP.md;字段被动握手)
 ├── shared/                         # 横切契约 + 行为协议 + 模板
 │   ├── contracts/
@@ -59,7 +59,7 @@ spec_wf/
 │       └── writer-references-template.md  # 4 writer references 结构骨架
 ├── scripts/
 │   ├── package.json                    # ajv / js-yaml 依赖
-│   └── validate.mjs                    # 唯一对外校验器:schema + 跨阶段 invariant (I-A~I-F) + audit 钩子 (C1~C6)
+│   └── validate.mjs                    # 唯一对外校验器:schema + 跨阶段 invariant (I-A~I-F) + audit 钩子 (C1~C7)
 ├── MAINTENANCE.md                      # 维护者指南(eval 回归测试 / schema 演进流程 / 演化历史)
 ├── USER-GUIDE.md                       # AI 开发用户上手指南(完整示例)
 └── spec-wf总结.md                       # 本文件(设计原理)
@@ -80,7 +80,7 @@ spec-critic-skill 也遵循同一布局(无 templates/,因为 critic.md 是 crit
 
 ---
 
-## 四、四步工作流(核心) + 软审查门
+## 四、四步工作流(核心) + 软门
 
 ```mermaid
 graph LR
@@ -93,7 +93,7 @@ graph LR
     T --> W[writeback]
     W --> Z[terminal]
 
-    %% 软审查门(任一阶段 reviewed 时触发)
+    %% 软门(任一阶段 reviewed 时触发)
     B -.critic.-> CR[(spec-critic)]
     S -.critic.-> CR
     D -.critic.-> CR
@@ -155,45 +155,23 @@ graph LR
 
 ## 六、frontmatter 字段流(A2 主轴落地,20 字段)
 
-```
-proposal-writer ──写──▶ change_name / status / change_mode /
-                       req_ledger_state / related_req_proposal
-                          │
-                  spec-writer ──读──▶ change_mode, related_req_proposal
-                  spec-writer ──写──▶ related_req / reference_specs(既有锚,增量追溯)/
-                                     touched_capabilities / impacted_modules / milestone
-                          │
-                  design-writer ──读──▶ change_mode, impacted_modules, touched_capabilities
-                  design-writer ──写──▶ produced_specs(本 change 自产 spec 路径)/
-                                       architecture_refs(活字段 path+usage)/
-                                       domain_modeling_level / domain_model_mode /
-                                       bounded_contexts / reused_modules / bc_relations
-                          │
-                task-decomposer ──读──▶ domain_modeling_level / bounded_contexts /
-                                       produced_specs / impacted_modules /
-                                       reused_modules(决定新建 vs 改造工单)/ bc_relations
-                task-decomposer ──写──▶ related_design / handover_domains / exc_status
-                          │
-                       workflow ──读──▶ 各 file.status / tasks.exc_status / change_mode
-                       workflow ──写──▶ tasks.shipped_us(writeback 唯一写)
-                       workflow ──写──▶ {target}.status: needs_revision / escalated(失败降级)
-                       workflow ──写──▶ tasks.exc_status: writeback_failed(F3)
-                          │
-                    spec-critic ──写──▶ critic.md(独立文件)+ {target}.status(三态副作用)
-                          │
-                            RBK ──监听─▶ req_ledger_state / related_req / shipped_us
-```
+跨 skill 协作仅靠字段读写。每个 skill 的"读什么 / 写什么"如下:
 
-**v3 与 v2 的差异**:
-- `related_specs` 拆分为 `reference_specs`(spec 视角)+ `produced_specs`(design 视角),消除同名异义
-- `status` 枚举:`{draft, reviewed}` → `{draft, reviewed, needs_revision, escalated}`
-- `exc_status` 枚举:`+ writeback_failed`
-- spec-critic 写 `critic.md` + 改 status,这是除 workflow writeback 外**唯一被允许写他人 status** 的 skill
+| skill | 读 | 写 |
+|-------|----|----|
+| **proposal-writer** | 用户意图 + `REQUIREMENTS.md`(初次) | `change_name` / `status` / `change_mode` / `req_ledger_state` / `related_req_proposal` |
+| **spec-writer** | `change_mode` / `related_req_proposal` | `related_req` / `reference_specs`(既有锚)/ `touched_capabilities` / `impacted_modules` / `milestone` |
+| **design-writer** | `change_mode` / `impacted_modules` / `touched_capabilities` | `produced_specs`(本 change 自产)/ `architecture_refs` / `domain_modeling_level` / `domain_model_mode` / `bounded_contexts` / `reused_modules` / `bc_relations` |
+| **task-decomposer** | `domain_modeling_level` / `bounded_contexts` / `produced_specs` / `impacted_modules` / `reused_modules` / `bc_relations` | `related_design` / `handover_domains` / `exc_status` |
+| **workflow** | 各 file.status / `tasks.exc_status` / `change_mode` | `tasks.shipped_us`(writeback)/ `{target}.status: needs_revision/escalated`(F1/F2)/ `tasks.exc_status: writeback_failed`(F3) |
+| **spec-critic** | 阶段产物正文 | `critic.md`(独立文件)+ `{target}.status` 三态副作用 |
+| **RBK** | `req_ledger_state` / `related_req` / `shipped_us`(被动监听) | `REQUIREMENTS.md` / `ROADMAP.md`(自治,本套不写) |
 
-**3 个握手点**(与项目级账本 `requirements-bookkeeping-skill` 协作):
-- ① proposal 起手:读 `REQUIREMENTS.md` → 写 `req_ledger_state`
-- ② spec 埋点:写 `related_req`,RBK 被动监听
-- ③ writeback:workflow 写 `shipped_us`,RBK 完成打勾
+**关键约束**:
+- `related_specs` 拆为 `reference_specs`(spec 引既有)+ `produced_specs`(design 引本 change),消除同名异义
+- `status` 枚举 `{draft, reviewed, needs_revision, escalated}`;`exc_status` 含 `writeback_failed`
+- spec-critic 是除 workflow writeback 外**唯一被允许写他人 status** 的 skill
+- **3 个握手点**(与 RBK 协作):① proposal 起手读 `REQUIREMENTS.md` → 写 `req_ledger_state` ② spec 写 `related_req` ③ writeback 写 `shipped_us`
 
 ---
 
@@ -233,7 +211,7 @@ proposal-writer ──写──▶ change_name / status / change_mode /
 | **D4 强约束** | spec | 一条 AUTH 只能归属一个 spec | 硬([`scripts/validate.mjs`](scripts/validate.mjs) I-E) |
 | **边界红线** | 各 writer | 见各自 `references/redlines.md` | 硬(critic / audit 拒绝) |
 | **跨阶段 invariant I-A ~ I-F** | 阶段切换 | change_name / change_mode 一致;reused⊇impacted;bc_relations⊆bounded_contexts;AUTH 唯一所有权;shipped_us 写入 | 硬(validator 退出 1) |
-| **audit 钩子 C1 ~ C6** | 任意时刻 | L3 留痕 / writeback 注释 / critic.md 格式 / needs_revision 老化 | C1-C5 硬 / C6 soft |
+| **audit 钩子 C1 ~ C7** | 任意时刻 | L3 留痕 / writeback 注释 / critic.md 格式 / needs_revision 老化 / CG 闸门留痕 | C1-C5, C7 硬 / C6 soft |
 
 ### 7.4 失败降级 3 路径
 
@@ -251,9 +229,9 @@ workflow 不再"甩锅给用户";失败必有显式状态字段表达,详见 [`s
 
 ---
 
-## 八、软审查(spec-critic-skill)
+## 八、软门(spec-critic-skill)
 
-> 由 LLM-as-Judge 对 4 writer 产出做软审查,与 deterministic `validate.mjs` 互补。
+> 由 LLM-as-Judge 对 4 writer 产出做「默认启用、可显式豁免的软门」审查,与 deterministic `validate.mjs` 互补。术语「软门」由 [`spec-critic-skill/SKILL.md`](spec-critic-skill/SKILL.md) §角色定位单点定义。
 
 ### 8.1 三步流程
 
@@ -287,9 +265,9 @@ workflow 不再"甩锅给用户";失败必有显式状态字段表达,详见 [`s
 
 | 工具 | 用途 | 退出码 |
 |------|------|-------|
-| [`scripts/validate.mjs`](scripts/validate.mjs) | spec-wf 唯一对外校验器:frontmatter schema + 跨阶段 invariant (I-A~I-F) + audit 钩子 (C1~C6,含 L3 留痕 / writeback 注释 / critic.md 格式 / needs_revision 老化) | 0 通过 / 1 hard 违例 / 2 仅 soft 警告 |
+| [`scripts/validate.mjs`](scripts/validate.mjs) | spec-wf 唯一对外校验器:frontmatter schema + 跨阶段 invariant (I-A~I-F) + audit 钩子 (C1~C7,含 L3 留痕 / writeback 注释 / critic.md 格式 / needs_revision 老化 / CG 闸门留痕) | 0 通过 / 1 hard 违例 / 2 仅 soft 警告 |
 
-> 维护者另有 [`eval/`](eval) 回归测试 runner 与 11 个 golden case;详见 [`MAINTENANCE.md`](MAINTENANCE.md)。
+> 维护者另有 [`eval/`](eval) 回归测试 runner 与 13 个 golden case;详见 [`MAINTENANCE.md`](MAINTENANCE.md)。
 > 普通使用者**无需**了解 eval,只需记住一个命令:`node scripts/validate.mjs <change-dir>`。
 
 ---
@@ -329,32 +307,30 @@ workflow 不再"甩锅给用户";失败必有显式状态字段表达,详见 [`s
 # 0. (一次性) 安装依赖
 cd scripts && npm install && cd ..
 
-# 1. 创建 change 目录(用户/AI 协作)
-mkdir -p docs/spec/my-feature/specs/
-
-# 2. AI 调 proposal-writer 起草 proposal.md(CDR 多轮)
+# 1. 把需求告诉 AI(目录由 proposal-writer 自动创建,无需手动 mkdir)
+#    AI 起草 proposal.md(先走 CG 闸门 → 再 CDR 多轮)
 # → 完成后 status: draft → reviewed
 
-# 3. workflow 自动触发 Change-Splitting Guard(6 维阈值)
+# 2. workflow 自动触发 Change-Splitting Guard(6 维阈值)
 # → pass 或路由到 change-decomposition
 
-# 4. AI 调 spec-writer 写 specs/*.md(每 capability 一份)
+# 3. AI 调 spec-writer 写 specs/*.md(每 capability 一份)
 # → CDR + status: reviewed
 
-# 5. AI 调 design-writer 写 design.md
+# 4. AI 调 design-writer 写 design.md
 # → 若 L3 必经 ToolCall 确认门
 # → CDR + status: reviewed
 
-# 6. AI 调 task-decomposer 写 tasks.md
+# 5. AI 调 task-decomposer 写 tasks.md
 # → host 可同步 shadow 出 TodoWrite
 
-# 7. (任一阶段 reviewed 后,可选)调 spec-critic 审查
+# 6. (任一阶段 reviewed 后,可选)调 spec-critic 审查
 # → verdict: pass(放行) / needs_revision(→ F1) / escalated(→ F2)
 
-# 8. 每次状态变更前自检
+# 7. 每次状态变更前自检
 node scripts/validate.mjs docs/spec/my-feature/        # schema + 跨阶段 + audit 钩子
 
-# 9. tasks 执行完 → exc_status: done → workflow writeback
+# 8. tasks 执行完 → exc_status: done → workflow writeback
 # → 注入 shipped_us → RBK 监听打勾
 ```
 
@@ -364,7 +340,7 @@ node scripts/validate.mjs docs/spec/my-feature/        # schema + 跨阶段 + au
 |------|--------|
 | schema 不通过 | `validate.mjs` 输出 + [`frontmatter-schema.md`](shared/contracts/frontmatter-schema.md) §4 |
 | 跨阶段 invariant 失败 | `validate.mjs` 输出的 I-A ~ I-F 编号 |
-| audit 钩子失败 | `validate.mjs` 输出的 C1 ~ C6 编号(L3 留痕 / writeback 注释 / critic 格式 / needs_revision 老化) |
+| audit 钩子失败 | `validate.mjs` 输出的 C1 ~ C7 编号(L3 留痕 / writeback 注释 / critic 格式 / needs_revision 老化 / CG 留痕) |
 | L3 升级被拒 | [`design-writer-skill/references/depth-confirmation.md`](design-writer-skill/references/depth-confirmation.md) §3 |
 | critic verdict=needs_revision | `critic.md` §3 违例表 + §4 裁决理由 |
 | workflow 卡死 | [`spec-design-workflow/references/failure-recovery.md`](spec-design-workflow/references/failure-recovery.md) §3 转移条件 |
@@ -375,19 +351,16 @@ node scripts/validate.mjs docs/spec/my-feature/        # schema + 跨阶段 + au
 
 ## 十二、演化历史
 
-本套 skill 经三批重构 + 一次简化合并演进至今,核心轨迹:
+经三批重构 + 一次简化合并:
+- **B1 契约机械化**:JSON Schema + validator + 6 条 invariant + `related_specs` 拆分
+- **B2 编排健壮性**:失败降级 3 路径 + 状态枚举扩充 + CDR 对话转译 + greenfield §0 折叠 + L3 ToolCall 确认门
+- **B3 范式升级**:spec-critic-skill(LLM-as-Judge)+ audit 钩子 + TodoWrite shadow + references 模板化
+- **简化合并**:`critic-checks.mjs` 并入 `validate.mjs`;删 `estimate.mjs` / `cost-model.md`;eval 收敛为维护者用具
 
-| 阶段 | 主题 | 关键产出 |
-|------|------|---------|
-| Batch 1 | 契约机械化 | JSON Schema + validator + 6 条 invariant + `related_specs` 拆分 + 5 个 golden case |
-| Batch 2 | 编排健壮性 | 失败降级 3 路径 + 状态枚举扩充 + CDR 对话转译 + greenfield §0 折叠 + L3 ToolCall 确认门 |
-| Batch 3 | 范式升级 | spec-critic-skill (LLM-as-Judge) + audit 钩子 + TodoWrite shadow + references 模板化 |
-| 简化合并 | 降低门槛 | `critic-checks.mjs` 并入 `validate.mjs`;删 `estimate.mjs` / `cost-model.md`;eval 收敛为维护者用具 |
-
-**当前 11 个 golden case 全绿**。完整批次记录与"仍有效的设计决策" / "未来候选" 详见 [`MAINTENANCE.md`](MAINTENANCE.md) §八-§九 与 [`BATCH{1,2,3}-CHANGELOG.md`](BATCH1-CHANGELOG.md)。
+**当前 13 个 golden case 全绿**。完整批次记录与"仍有效的设计决策" / "未来候选"见 [`MAINTENANCE.md`](MAINTENANCE.md) §八-§九。
 
 ---
 
 ## 十三、一句话总结
 
-**先盘点既有(proposal §0)→ 划清业务(spec L0–L4)→ 显式复用架构(design 四维 + ADR 自检 + L3 ToolCall 确认门)→ 切分工单(tasks BC × 承接方,可 shadow 出 TodoWrite)→ 软审查兜底(spec-critic 三态裁决)**，全程靠 frontmatter 字段串联、CDR 循环精炼、shared 契约兜底、scripts deterministic 校验、失败降级显式表达——把"复用既有工程能力、保持架构简洁"做成**双轨可机械校验**的工程纪律(硬门 schema/invariant/audit-hooks,软门 LLM-as-Judge),而非靠开发者自觉。
+**先盘点既有(proposal §0)→ 划清业务(spec L0–L4)→ 显式复用架构(design 四维 + ADR 自检 + L3 ToolCall 确认门)→ 切分工单(tasks BC × 承接方,可 shadow 出 TodoWrite)→ 软门兜底(spec-critic 三态裁决)**，全程靠 frontmatter 字段串联、CDR 循环精炼、shared 契约兜底、scripts deterministic 校验、失败降级显式表达——把"复用既有工程能力、保持架构简洁"做成**双轨可机械校验**的工程纪律(硬门 schema/invariant/audit-hooks,软门 LLM-as-Judge),而非靠开发者自觉。

@@ -31,6 +31,7 @@ description: 编排 4 个写手 skill(proposal / spec / design / task-decomposer
 ## 四件事 + 1 个降级机制(workflow 的全部职责)
 
 > 第 5 项「失败降级」与前 4 项正交;失败时**不离开 workflow**,通过状态字段降级。详见 [`references/failure-recovery.md`](./references/failure-recovery.md)。
+> **critic 软门**(默认启用、可显式豁免):specs/design/tasks 阶段 `status: reviewed` 后,workflow 在转移前需检查 critic 状态(见「状态转移条件表」`critic_ok` 列);critic 由 [`spec-critic-skill`](../spec-critic-skill/SKILL.md) 自治,workflow 仅读其 verdict,不参与 critic 内部判据。
 
 
 ### 1. 状态机
@@ -105,24 +106,26 @@ graph LR
 
 ### 正向(happy path)
 
-| From → To | 条件 |
-|-----------|------|
-| `init → proposal` | 用户请求"做技术方案" |
-| `proposal → guard` | `proposal.status == reviewed` |
-| `guard → specs` | 6 维阈值全部未触发 + frontmatter 合法 |
-| `guard → split` | 6 维阈值任一触发 → 外部 change-decomposition-skill |
-| `specs → design` | 全部 `specs/*.status == reviewed` + 跨阶段 checklist 通过 |
-| `design → tasks` | `design.status == reviewed` + 跨阶段 checklist 通过 |
-| `tasks → writeback` | `tasks.exc_status == done` |
-| `writeback → terminal` | `tasks.shipped_us` 已注入 |
+> **critic 软门约定**:阶段产物 `status: reviewed` 后,workflow 在转移前先检查 critic 状态(见下表 `critic_ok` 列)。`critic_ok` 满足任一即视为通过:`critic.md` 存在且 `verdict: pass` / 用户显式跳过(`<!-- critic-skipped: <reason> -->`)/ 阶段产物为 proposal 且无 critic 报告(critic 对 proposal 非强制)。critic verdict 为 `needs_revision` / `escalated` 时不触发正向转移,改走失败降级 F1/F2。
+
+| From → To | 条件 | critic_ok |
+|-----------|------|-----------|
+| `init → proposal` | 用户请求"做技术方案" | — |
+| `proposal → guard` | `proposal.status == reviewed` | 非强制 |
+| `guard → specs` | 6 维阈值全部未触发 + frontmatter 合法 | — |
+| `guard → split` | 6 维阈值任一触发 → 外部 change-decomposition-skill | — |
+| `specs → design` | 全部 `specs/*.status == reviewed` + 跨阶段 checklist 通过 | 必需 |
+| `design → tasks` | `design.status == reviewed` + 跨阶段 checklist 通过 | 必需 |
+| `tasks → writeback` | `tasks.exc_status == done` | 必需 |
+| `writeback → terminal` | `tasks.shipped_us` 已注入 | — |
 
 ### 失败降级(详见 [`references/failure-recovery.md`](./references/failure-recovery.md))
 
 | From → To | 条件 | 状态写入 |
 |-----------|------|---------|
-| `specs/design (reviewed) → needs_revision` | 跨阶段 checklist 任一失败 / validator 失败 | 对应文件 `status: needs_revision` |
+| `specs/design/tasks (reviewed) → needs_revision` | 跨阶段 checklist 任一失败 / validator 失败 / **critic verdict == needs_revision** | 对应文件 `status: needs_revision` |
 | `needs_revision → draft` | 用户/skill 修复违例 | 对应文件 `status: draft` |
-| `任一阶段(draft) → escalated` | CDR ≥ 6 轮未收敛 | 对应文件 `status: escalated` |
+| `任一阶段(draft/reviewed) → escalated` | CDR ≥ 6 轮未收敛 / **critic verdict == escalated** | 对应文件 `status: escalated` |
 | `escalated → draft` | 用户人工裁决批注 | 对应文件 `status: draft` |
 | `writeback → tasks` | writeback 数据构造异常(F3) | `tasks.exc_status: writeback_failed` |
 | `writeback_failed → done` | 用户修复后手动改回 | `tasks.exc_status: done` 重试 writeback |
@@ -196,6 +199,7 @@ workflow **不做**下列事项,触发即视为越界(主索引 §3 A1 / Hard Ba
 - [ ] 跨阶段 checklist 全部勾选(本文件"四件事 §3")
 - [ ] 字段合法性(frontmatter ⊆ schema §1 + 枚举 ∈ §4.3 闭集)
 - [ ] 路径可达(`reference_specs` / `produced_specs` / `related_design` 指向的文件存在)
+- [ ] critic 软门通过(specs/design/tasks 阶段强制):`critic.md verdict == pass` 或存在 `<!-- critic-skipped: <reason> -->` 显式跳过标记;verdict 为 `needs_revision` / `escalated` 时按失败降级路径处理,不正向转移
 
 未通过则**拒绝转移**,workflow 状态保持原节点。
 

@@ -23,6 +23,8 @@ description: 把 proposal 的战略意图翻译为业务级可验证规约(`docs
 6. `change_mode` 与增量标注联动:`refactor` 必含 `[已有·修改]` 或 `[已有·废弃]`;`bugfix` 必含 `[已有·修改]`
 7. DMN 决策表按 [`references/dmn-when-and-how.md`](references/dmn-when-and-how.md) 启用判据嵌入,与 L0/L2/L3/L4 严守去重
 8. **路径自治**:写第一份 `specs/*.md` 前若 `docs/spec/{change_name}/specs/` 不存在则自动创建(idempotent)
+9. **CG 闸门强制**(P0):动笔前必须走一轮 [`../shared/protocols/clarification-gate-protocol.md`](../shared/protocols/clarification-gate-protocol.md);首版 `specs/*.md` 顶部必须含 `<!-- clarification-gate -->` 块,verdict ∈ {PASS, ABORTED}。允许基于 proposal CG 已对齐项收窄问卷,无新增缺口时留 `verdict: PASS, qa: []`;缺块即触发 validate.mjs C7 hard fail。
+10. **reviewed 由用户裁决**:skill **不得**自行把 `status` 从 `draft` 升 `reviewed`;CDR 退出 + checklist 全勾选后必须以 ToolCall 三选项形态请用户裁决:`[1] 满意,升 reviewed` / `[2] 还需修改` / `[3] 重写本 spec`,得到 `[1]` 才执行 frontmatter 字段升级。
 
 ## 输入
 

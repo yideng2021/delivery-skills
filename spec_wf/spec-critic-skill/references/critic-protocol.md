@@ -1,7 +1,7 @@
 # Critic Protocol — LLM-as-Judge 反向审查协议
 
 > 本文件是 spec-critic-skill 的核心运行协议。SKILL.md 不复述本表步骤。
-> 借鉴范式:Reflexion / Self-Refine / Constitutional AI 的「批判→修正」回环,但**人类判断仍在 CDR 中**,critic 只做「软审查 + verdict」。
+> 借鉴范式:Reflexion / Self-Refine / Constitutional AI 的「批判→修正」回环,但**人类判断仍在 CDR 中**,critic 只做「软门 + verdict」(术语「软门」由 [`../SKILL.md`](../SKILL.md) §角色定位单点定义)。
 
 ---
 

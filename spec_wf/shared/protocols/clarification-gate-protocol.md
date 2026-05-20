@@ -144,11 +144,11 @@ qa: []
 | Writer | 单 turn 题数上限 | 必检字段 | audit 强度 |
 |--------|-----------------|----------|-----------|
 | **proposal-writer** | **5** | 受益方 / change_mode / §0 复用决策 / related_req_proposal 关联意图 / Backout 策略 | **hard fail**(P0) |
-| **spec-writer** | 3 | 单 spec 业务边界 / INV 跨租户性 / DMN 是否引入 | soft warn(P1 推开) |
-| **design-writer** | 2 + 已有 L3 门 | BC 拆分初判 / 模块复用决策 | soft warn(L3 门保持独立) |
+| **spec-writer** | **3** | 单 spec 业务边界 / INV 跨租户性 / DMN 是否引入 | **hard fail**(P0;允许基于 proposal CG 已对齐项缩小提问范围,无新增缺口时留 `verdict: PASS, qa: []`) |
+| **design-writer** | 2 + 已有 L3 门 | BC 拆分初判 / 模块复用决策 | soft warn(L3 门保持独立;P1) |
 | **task-decomposer** | 1(可豁免) | handover_domains 拆分意图 | 无强制 |
 
-> proposal 是 spec-wf 入口,错误成本最高,P0 阶段仅在 proposal 强制 hard fail。
+> proposal/spec 是战略与业务边界的双重入口,错误成本最高,P0 阶段在 proposal 与 spec 均强制 hard fail。design/tasks 暂保持 soft 或豁免,P1 阶段再评估。
 
 ---
 
@@ -178,13 +178,16 @@ qa: []
 
 ## §10 校验规则(供 validate.mjs C7)
 
-- `proposal.md`(status == draft 或 reviewed): 文件必须含 `<!-- clarification-gate -->` 块
+**适用范围(P0)**:`proposal.md` 与 `specs/*.md`(任一 status ∈ {draft, reviewed})。
+
+- 文件必须含 `<!-- clarification-gate -->` 块
 - 块内必须含 `stage`, `ts`, `turn`, `verdict` 字段
 - `verdict` ∈ {PASS, ABORTED}(NEEDS_MORE 仅中间态,不落产物)
 - 若 `verdict == ABORTED`,必须含 `skip_reason` 字段
 - 若 `verdict == PASS` 且 `qa` 段非空,每条 q/a 必须配对完整
+- `specs/*.md` 允许 `qa: []`(已在 proposal CG 对齐,无新增缺口),但 `verdict: PASS` 留痕仍必填
 
-> 当前 P0 仅 proposal 强制 hard fail;spec/design/tasks P1 阶段推开。
+> P0 阶段:proposal + spec 均 hard fail;design/tasks 暂不强制(P1 评估)。
 
 ---
 
@@ -193,7 +196,7 @@ qa: []
 | Skill | 在 CG 中的角色 |
 |-------|----------------|
 | `proposal-writer-skill` | **强制**走 CG,缺口检测 + 5 题问卷 + hard fail 留痕 |
-| `spec-writer-skill` | P1 推开;3 题问卷,soft warn |
+| `spec-writer-skill` | **强制**走 CG,3 题问卷;允许基于 proposal CG 收窄问卷,无新增缺口时 `verdict: PASS, qa: []` |
 | `design-writer-skill` | P1 推开;2 题问卷 + 既有 L3 门串行 |
 | `task-decomposer-skill` | 可豁免;1 题或直接 ABORTED |
 | `spec-design-workflow` | **不参与 CG**,仅监听各文件 `status` 字段以驱动转移 |

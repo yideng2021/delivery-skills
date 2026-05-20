@@ -43,8 +43,8 @@ cd skills/spec_wf/scripts
 npm install
 cd ../../..
 
-# 2. 验证脚本可用
-node skills/spec_wf/scripts/validate.mjs --help 2>&1 | head -1
+# 2. 验证脚本可用(不传参时打印用法,退出码 2 即正常)
+node skills/spec_wf/scripts/validate.mjs
 # 期望输出: 用法: validate.mjs <change-dir | file.md>...
 ```
 
@@ -93,6 +93,8 @@ node skills/spec_wf/scripts/validate.mjs --help 2>&1 | head -1
 
 **若你的项目尚无账本**,可改走**路径 B(增量补录)**:proposal 起草时 `req_ledger_state: missing` + `related_req_proposal: []`,
 4 步走完后再由用户触发 RBK U5 反向登记。两种路径的对比与切换详见 §7.4。
+
+> ⚠ **无需手动 `mkdir`**:`docs/spec/{change_name}/` 及其 `specs/` 子目录由 proposal-writer / spec-writer 自动创建。你只需向 AI 描述需求即可起步。
 
 ### 4.1 Step 1 — proposal.md
 
@@ -322,9 +324,10 @@ node skills/spec_wf/scripts/validate.mjs docs/spec/user-signup/
 
 ## 7. 进阶能力(按需启用)
 
-### 7.1 软审查(spec-critic)
+### 7.1 软门(spec-critic)
 
 任一阶段 `status: reviewed` 后,可让 AI 调 spec-critic-skill 做 LLM-as-Judge 审查,输出 `critic.md` + 三态裁决(pass / needs_revision / escalated)。
+术语「软门」(默认启用、可显式豁免)由 [`spec-critic-skill/SKILL.md`](spec-critic-skill/SKILL.md) §角色定位单点定义。
 
 **触发方式**:
 > 请对 docs/spec/user-signup/design.md 做 critic

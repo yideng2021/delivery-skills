@@ -26,6 +26,7 @@ description: >
 8. CDR 退出 + §5 自检全勾选,才允许 `status: draft → reviewed`
 9. **路径自治**:写 proposal.md 前若 `docs/spec/{change_name}/` 不存在则自动创建(idempotent;已存在则视为继续既有 change,读现有 frontmatter)
 10. **CG 闸门强制**(P0):动笔前必须走一轮 [`../shared/protocols/clarification-gate-protocol.md`](../shared/protocols/clarification-gate-protocol.md);首版 proposal.md 顶部必须含 `<!-- clarification-gate -->` 块,verdict ∈ {PASS, ABORTED}。缺失即触发 validate.mjs C7 hard fail。
+11. **reviewed 由用户裁决**:skill **不得**自行把 `status` 从 `draft` 升 `reviewed`;CDR 退出 + §5 自检全勾选后必须以 ToolCall 三选项形态请用户裁决:`[1] 满意,升 reviewed` / `[2] 还需修改` / `[3] 重写 proposal`,得到 `[1]` 才执行 frontmatter 字段升级。
 
 ## 输入
 

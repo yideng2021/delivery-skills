@@ -1,4 +1,4 @@
----
+﻿---
 change_name: hello-feature
 status: reviewed
 change_mode: greenfield
@@ -8,5 +8,13 @@ touched_capabilities: []
 impacted_modules: []
 milestone: —
 ---
+
+<!-- clarification-gate
+stage: spec
+ts: 2026-05-18T10:00
+turn: 1
+verdict: PASS
+qa: []
+-->
 
 # Spec — hello-feature (greenfield)
