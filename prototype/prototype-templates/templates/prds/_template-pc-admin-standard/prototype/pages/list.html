@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>员工管理系统 - 员工列表</title>
+  <link rel="stylesheet" href="../../../_shared/css/tokens.css">
+  <link rel="stylesheet" href="../../../_shared/css/common.css">
+  <link rel="stylesheet" href="../css/pages/list.css">
+</head>
+<body>
+  <div class="layout">
+    <!-- Header 挂载点 -->
+    <div id="app-header"></div>
+
+    <!-- Sidebar 挂载点（会被 renderSidebar 替换） -->
+    <aside id="app-sidebar"></aside>
+
+    <main class="main-content">
+      <!-- 面包屑 -->
+      <div class="breadcrumb-nav">
+        <a href="../../../index.html">首页</a>
+        <span class="separator">/</span>
+        <a href="#">员工管理</a>
+        <span class="separator">/</span>
+        <span class="current">员工列表</span>
+      </div>
+
+      <div class="content-body">
+        <!-- 查询区（4列栅格规范示例） -->
+        <div class="filter-section">
+          <!-- 高频字段（第1行） -->
+          <form class="filter-form" onsubmit="return false;">
+            <div class="form-group">
+              <label class="form-label">关键字</label>
+              <div class="input-wrapper" id="wrap-keyword">
+                <input type="text" id="q-keyword" class="form-input" placeholder="员工姓名 / 工号">
+                <button type="button" class="input-clear" data-clear="q-keyword" aria-label="清空">×</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">部门</label>
+              <select id="q-department" class="form-select">
+                <option value="">全部</option>
+                <option value="产品研发部">产品研发部</option>
+                <option value="市场运营部">市场运营部</option>
+                <option value="人力资源部">人力资源部</option>
+                <option value="财务部">财务部</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">在职状态</label>
+              <select id="q-status" class="form-select">
+                <option value="">全部</option>
+                <option value="on-duty">在职</option>
+                <option value="probation">试用期</option>
+                <option value="leave">休假中</option>
+                <option value="offboarding">离职中</option>
+              </select>
+            </div>
+            <!-- 操作按钮组，始终占据第4列 -->
+            <div class="filter-actions">
+              <button type="button" class="btn btn--primary" id="btn-query">查询</button>
+              <button type="button" class="btn btn--secondary" id="btn-reset">重置</button>
+              <button type="button" class="btn btn--text" id="btn-expand-filter">
+                <span class="expand-text">展开</span>
+                <span class="expand-icon">▼</span>
+              </button>
+            </div>
+          </form>
+
+          <!-- 低频字段区域（默认折叠） -->
+          <div class="filter-expand" id="filter-expand" style="display: none;">
+            <form class="filter-form filter-form--secondary" onsubmit="return false;">
+              <!-- 第2行 -->
+              <div class="form-group">
+                <label class="form-label">入职日期</label>
+                <input type="date" id="q-join-date" class="form-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label">岗位</label>
+                <input type="text" id="q-position" class="form-input" placeholder="输入岗位名称">
+              </div>
+              <div class="form-group">
+                <label class="form-label">职级</label>
+                <select id="q-level" class="form-select">
+                  <option value="">全部</option>
+                  <option value="P1">P1</option>
+                  <option value="P2">P2</option>
+                  <option value="P3">P3</option>
+                  <option value="P4">P4</option>
+                  <option value="P5">P5</option>
+                </select>
+              </div>
+              <div></div>
+
+              <!-- 第3行 -->
+              <div class="form-group">
+                <!-- 日期范围：快捷项与 label 同行右端对齐 -->
+                <div class="label-with-shortcuts">
+                  <span>入职日期范围</span>
+                  <span class="date-shortcuts">
+                    <a data-range="7">近7天</a>
+                    <a data-range="30">近30天</a>
+                    <a data-range="month">本月</a>
+                  </span>
+                </div>
+                <input type="text" id="q-date-range" class="form-input" placeholder="YYYY-MM-DD 至 YYYY-MM-DD" readonly>
+              </div>
+              <div class="form-group">
+                <label class="form-label">绩效等级</label>
+                <select id="q-performance" class="form-select">
+                  <option value="">全部</option>
+                  <option value="excellent">优秀</option>
+                  <option value="good">良好</option>
+                  <option value="average">一般</option>
+                  <option value="need-improve">待改进</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">用工性质</label>
+                <select id="q-employment-type" class="form-select">
+                  <option value="">全部</option>
+                  <option value="full-time">全职</option>
+                  <option value="part-time">兼职</option>
+                  <option value="contract">劳务派遣</option>
+                  <option value="intern">实习生</option>
+                </select>
+              </div>
+              <div></div>
+
+              <!-- 第4行 -->
+              <div class="form-group">
+                <label class="form-label">工作地点</label>
+                <select id="q-location" class="form-select">
+                  <option value="">全部</option>
+                  <option value="beijing">北京</option>
+                  <option value="shanghai">上海</option>
+                  <option value="shenzhen">深圳</option>
+                  <option value="hangzhou">杭州</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">试用期状态</label>
+                <select id="q-probation-status" class="form-select">
+                  <option value="">全部</option>
+                  <option value="probation">试用中</option>
+                  <option value="passed">已转正</option>
+                  <option value="failed">未通过</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">是否管理者</label>
+                <select id="q-is-manager" class="form-select">
+                  <option value="">全部</option>
+                  <option value="yes">是</option>
+                  <option value="no">否</option>
+                </select>
+              </div>
+              <div></div>
+            </form>
+          </div>
+        </div>
+
+        <!-- 列表区 -->
+        <div class="data-section">
+          <div class="table-header">
+            <h2 class="table-title">员工列表</h2>
+            <div class="table-actions">
+              <button class="btn btn--primary btn--small" id="btn-create">新增员工</button>
+              <button class="btn btn--secondary btn--small" id="btn-import">批量导入</button>
+              <button class="btn btn--secondary btn--small" id="btn-export">导出</button>
+            </div>
+          </div>
+
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>工号</th>
+                <th>姓名</th>
+                <th>部门</th>
+                <th>岗位</th>
+                <th>职级</th>
+                <th>入职日期</th>
+                <th>状态 / 绩效</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="employee-tbody"></tbody>
+          </table>
+
+          <div class="pagination-section">
+            <div class="pagination-info" id="pagination-info">加载中...</div>
+            <div class="pagination-controls" id="pagination-controls"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../../../_shared/reference/menu-data.js"></script>
+  <script src="../../../_shared/reference/header.js"></script>
+  <script src="../../../_shared/reference/sidebar.js"></script>
+  <script src="../../../_shared/js/common.js"></script>
+  <script src="../../../_shared/api/routes.js"></script>
+  <script src="../mock/employees.js"></script>
+  <script src="../js/services/employeeService.js"></script>
+  <script src="../js/pages/list.js"></script>
+</body>
+</html>

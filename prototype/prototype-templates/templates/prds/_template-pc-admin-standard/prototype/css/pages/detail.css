@@ -1,0 +1,265 @@
+/* 员工详情页特有样式 */
+
+/* 页面操作区 */
+.page-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-text-title);
+}
+
+.page-actions__buttons {
+  display: flex;
+  gap: 12px;
+}
+
+/* 信息网格（对应"企业基本信息"） */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.info-item { display: flex; flex-direction: column; }
+.info-item--full-width { grid-column: 1 / -1; }
+
+.info-label {
+  font-size: 14px;
+  color: var(--color-text-assistive);
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.info-value {
+  font-size: 16px;
+  color: var(--color-text-title);
+  font-weight: 500;
+}
+
+.info-value--textarea {
+  background-color: var(--color-bg-head);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 80px;
+  white-space: pre-wrap;
+}
+
+/* 评估卡片区（对应"企业风险检查评估结果") */
+.assessment-legend {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 12px;
+}
+
+.assessment-legend__item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.assessment-legend__light {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.assessment-legend__light--red { background-color: var(--color-danger); }
+.assessment-legend__light--yellow { background-color: var(--color-warning); }
+.assessment-legend__light--green { background-color: var(--color-success); }
+
+.assessment-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+}
+
+.assessment-card {
+  padding: 24px;
+  border-right: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.assessment-card:last-child { border-right: none; }
+
+.assessment-card:hover {
+  background-color: var(--color-bg-head);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.assessment-card__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-title);
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.assessment-card__body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.assessment-card__light {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.assessment-card__light--red { background-color: var(--color-danger); }
+.assessment-card__light--yellow { background-color: var(--color-warning); }
+.assessment-card__light--green { background-color: var(--color-success); }
+
+.assessment-card__text {
+  font-size: 12px;
+  color: var(--color-text-assistive);
+}
+
+.assessment-card__text--red { color: var(--color-danger-text); }
+.assessment-card__text--yellow { color: var(--color-warning-text); }
+.assessment-card__text--green { color: var(--color-success-text); }
+
+/* Tab 容器 */
+.tabs-container {
+  background-color: var(--color-bg-card);
+  border-radius: 6px;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.tabs-header {
+  display: flex;
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-bg-head);
+}
+
+.tab-button {
+  padding: 16px 24px;
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-assistive);
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tab-button:hover {
+  color: var(--color-primary);
+  background-color: rgba(30, 58, 138, 0.05);
+}
+
+.tab-button--active {
+  color: var(--color-primary);
+  background-color: var(--color-bg-card);
+  font-weight: 600;
+}
+
+.tab-button--active::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background-color: var(--color-primary);
+}
+
+.tab-badge {
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 16px;
+  text-align: center;
+}
+
+.tab-content {
+  padding: 24px;
+  display: none;
+}
+
+.tab-content--active { display: block; }
+
+/* 子 tab */
+.sub-tabs { margin-bottom: 24px; }
+
+.sub-tabs-header {
+  display: flex;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.sub-tab-button {
+  padding: 12px 20px;
+  background: none;
+  border: none;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-assistive);
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.sub-tab-button:hover { color: var(--color-primary); }
+
+.sub-tab-button--active {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.sub-tab-button--active::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background-color: var(--color-primary);
+}
+
+.sub-tab-content { display: none; }
+.sub-tab-content--active { display: block; }
+
+/* Tab 内部小节标题 */
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-title);
+  margin-bottom: 16px;
+}
+
+.section-title + .section-title { margin-top: 32px; }
+
+.tab-content .data-table + .section-title { margin-top: 32px; }
+
+/* 响应式 */
+@media (max-width: 1200px) {
+  .assessment-cards { grid-template-columns: repeat(2, 1fr); }
+  .assessment-card { border-bottom: 1px solid var(--color-border); }
+  .assessment-card:nth-child(2n) { border-right: none; }
+}
+
+@media (max-width: 768px) {
+  .info-grid { grid-template-columns: 1fr; }
+  .page-actions { flex-direction: column; gap: 16px; align-items: flex-start; }
+  .assessment-cards { grid-template-columns: 1fr; }
+  .assessment-card { border-right: none; border-bottom: 1px solid var(--color-border); }
+  .tabs-header { flex-wrap: wrap; }
+}

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>员工管理系统 - 项目入口</title>
+  <link rel="stylesheet" href="_shared/css/tokens.css">
+  <link rel="stylesheet" href="_shared/css/common.css">
+  <style>
+    body { background-color: var(--color-bg-page); min-height: 100vh; }
+
+    /* Index 页 header 不走 grid layout，需要覆盖 grid-area 防止隐藏 */
+    .header { position: sticky; top: 0; width: 100%; }
+
+    .index-main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 48px 32px;
+    }
+
+    .index-hero {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .index-hero__title {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: 12px;
+    }
+
+    .index-hero__desc {
+      font-size: 15px;
+      color: var(--color-text-body);
+      line-height: 1.7;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .index-section { margin-bottom: 40px; }
+
+    .index-section__title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--color-text-title);
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--color-primary);
+      display: inline-block;
+    }
+
+    .index-section__desc {
+      font-size: 14px;
+      color: var(--color-text-assistive);
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .index-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .index-card {
+      display: block;
+      padding: 20px;
+      background-color: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .index-card:hover {
+      border-color: var(--color-primary);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transform: translateY(-2px);
+    }
+
+    .index-card__tag {
+      display: inline-block;
+      font-size: 11px;
+      color: var(--color-primary);
+      background-color: var(--color-primary-soft);
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .index-card__title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--color-text-title);
+      margin-bottom: 6px;
+    }
+
+    .index-card__desc {
+      font-size: 13px;
+      color: var(--color-text-assistive);
+      line-height: 1.5;
+    }
+
+    .index-card__arrow {
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--color-primary);
+      font-weight: 500;
+    }
+
+    .index-note {
+      margin-top: 32px;
+      padding: 16px 20px;
+      background-color: var(--color-primary-soft);
+      border-left: 3px solid var(--color-primary);
+      border-radius: 4px;
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--color-text-body);
+    }
+  </style>
+</head>
+<body>
+  <div id="app-header"></div>
+
+  <main class="index-main">
+    <div class="index-hero">
+      <h1 class="index-hero__title">员工管理系统 · 原型入口</h1>
+      <p class="index-hero__desc">
+        本项目为 PC 后台管理系统的原型演示工程，包含员工列表、员工详情、岗位配置等高频页面形态。<br>
+        所有页面均基于统一的设计令牌、共享组件与模拟数据构建，可直接用 file:// 协议打开查看。
+      </p>
+    </div>
+
+    <section class="index-section">
+      <h2 class="index-section__title">📚 模板参考</h2>
+      <p class="index-section__desc">
+        下列页面位于 <code>_template-pc-admin-standard/</code>，代表 PC 后台标准模板的典型三种页面形态，可作为新业务模块的起点参考。
+      </p>
+      <div class="index-cards">
+        <a class="index-card" href="_template-pc-admin-standard/prototype/pages/list.html">
+          <span class="index-card__tag">列表页</span>
+          <div class="index-card__title">员工列表</div>
+          <div class="index-card__desc">筛选 · 分页表格 · 批量操作，覆盖后台"查询 + 列表"的标准形态</div>
+          <div class="index-card__arrow">进入预览 →</div>
+        </a>
+        <a class="index-card" href="_template-pc-admin-standard/prototype/pages/detail.html?id=E0001">
+          <span class="index-card__tag">详情页</span>
+          <div class="index-card__title">员工详情</div>
+          <div class="index-card__desc">基础信息 · 评估卡片 · 多 Tab + 子 Tab 嵌套，覆盖复杂对象的综合展示形态</div>
+          <div class="index-card__arrow">进入预览 →</div>
+        </a>
+        <a class="index-card" href="_template-pc-admin-standard/prototype/pages/form.html">
+          <span class="index-card__tag">表单页</span>
+          <div class="index-card__title">岗位配置</div>
+          <div class="index-card__desc">多卡片分区 · 动态行 · 标签选择器，覆盖多段式配置表单的标准形态</div>
+          <div class="index-card__arrow">进入预览 →</div>
+        </a>
+      </div>
+    </section>
+
+    <div class="index-note">
+      <strong>使用说明：</strong>本原型工程聚焦视觉与交互演示，所有数据均为前端 Mock，无后端依赖。
+      需要接入真实 API 时，替换 <code>_template-pc-admin-standard/prototype/mock/</code> 下的数据源
+      与 <code>js/services/</code> 下的服务层即可。
+    </div>
+  </main>
+
+  <script src="_shared/reference/menu-data.js"></script>
+  <script src="_shared/reference/header.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      window.renderHeader('app-header');
+    });
+  </script>
+</body>
+</html>

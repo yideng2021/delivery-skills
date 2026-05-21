@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>员工管理系统 - 岗位配置</title>
+  <link rel="stylesheet" href="../../../_shared/css/tokens.css">
+  <link rel="stylesheet" href="../../../_shared/css/common.css">
+  <link rel="stylesheet" href="../css/pages/form.css">
+</head>
+<body>
+  <div class="layout">
+    <div id="app-header"></div>
+    <aside id="app-sidebar"></aside>
+
+    <main class="main-content">
+      <div class="breadcrumb-nav">
+        <a href="../../../index.html">首页</a>
+        <span class="separator">/</span>
+        <a href="#">员工管理</a>
+        <span class="separator">/</span>
+        <span class="current">岗位配置</span>
+      </div>
+
+      <div class="content-body">
+        <!-- 页面操作区 -->
+        <div class="page-actions">
+          <h1 class="page-title">岗位配置</h1>
+          <div class="page-actions__buttons">
+            <button class="btn btn--secondary" id="btn-cancel">取消</button>
+            <button class="btn btn--primary" id="btn-save">保存配置</button>
+          </div>
+        </div>
+
+        <div class="form-card__hint">
+          配置岗位的基础属性、任职要求与考核指标，保存后该配置将作为员工任职管理、晋升评估及绩效核算的依据。
+        </div>
+
+        <!-- Card 1: 岗位基础信息 -->
+        <div class="card">
+          <div class="card__header">
+            <div>
+              <h2 class="card__title">岗位基础信息</h2>
+              <p class="card__description">定义岗位的基本属性，用于员工入职和晋升流转</p>
+            </div>
+          </div>
+          <div class="card__body">
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label form-label--required">岗位名称</label>
+                <input class="form-input" id="f-name" value="高级前端工程师">
+              </div>
+              <div class="form-group">
+                <label class="form-label form-label--required">岗位编码</label>
+                <input class="form-input" id="f-code" value="JOB-TECH-FE-02" readonly>
+                <div class="help-text">系统自动生成，不可修改</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label form-label--required">所属部门</label>
+                <select class="form-select" id="f-department">
+                  <option>产品研发部</option>
+                  <option>市场运营部</option>
+                  <option>人力资源部</option>
+                  <option>财务部</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label form-label--required">岗位序列</label>
+                <select class="form-select" id="f-category">
+                  <option value="tech">专业技术序列</option>
+                  <option value="manage">管理序列</option>
+                  <option value="support">职能支持序列</option>
+                  <option value="sales">销售序列</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label form-label--required">岗位职级</label>
+                <select class="form-select" id="f-level">
+                  <option>P4 - 初级</option>
+                  <option>P5 - 中级</option>
+                  <option selected>P6 - 高级</option>
+                  <option>P7 - 资深</option>
+                  <option>P8 - 专家</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">编制上限</label>
+                <input class="form-input" type="number" id="f-headcount" value="5" min="1" max="50">
+                <div class="help-text">单位：人。上限仅供 HR 参考，不限制实际招聘</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">基础薪资范围（月）</label>
+                <input class="form-input" id="f-salary-range" value="18,000 - 32,000 元">
+              </div>
+              <div class="form-group">
+                <label class="form-label">汇报对象</label>
+                <select class="form-select" id="f-report-to">
+                  <option>技术总监</option>
+                  <option>前端负责人</option>
+                  <option>研发经理</option>
+                </select>
+              </div>
+              <div class="form-group form-group--full">
+                <label class="form-label">岗位描述</label>
+                <textarea class="form-textarea" id="f-description" rows="3">负责公司核心产品前端开发，参与技术选型、架构设计，推动工程化建设，产出可复用的组件与工具，指导初中级工程师。</textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: 任职要求 -->
+        <div class="card">
+          <div class="card__header">
+            <div>
+              <h2 class="card__title">任职要求</h2>
+              <p class="card__description">用于招聘筛选、面试评估与转岗评估</p>
+            </div>
+          </div>
+          <div class="card__body">
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label form-label--required">最低学历</label>
+                <select class="form-select" id="f-edu">
+                  <option>大专</option>
+                  <option selected>本科</option>
+                  <option>硕士</option>
+                  <option>博士</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">专业方向</label>
+                <input class="form-input" id="f-major" value="计算机、软件工程、电子信息等相关专业">
+              </div>
+              <div class="form-group">
+                <label class="form-label form-label--required">工作年限</label>
+                <input class="form-input" id="f-experience" value="5 年及以上">
+              </div>
+              <div class="form-group">
+                <label class="form-label">行业经验</label>
+                <select class="form-select" id="f-industry">
+                  <option>不限</option>
+                  <option selected>互联网 / 金融科技</option>
+                  <option>传统企业信息化</option>
+                </select>
+              </div>
+              <div class="form-group form-group--full">
+                <label class="form-label">核心技能要求（可多选）</label>
+                <div class="skill-tags" id="skill-tags">
+                  <!-- 由 JS 渲染 -->
+                </div>
+              </div>
+              <div class="form-group form-group--full">
+                <label class="form-label">岗位职责</label>
+                <textarea class="form-textarea" id="f-duty" rows="5">1. 负责公司核心业务系统的前端开发与优化；
+2. 参与前端架构设计、技术选型与工程化建设；
+3. 沉淀可复用的组件库与工具链，提升团队开发效率；
+4. 指导初中级工程师，参与技术评审与代码审查；
+5. 跟进线上问题定位、性能优化与稳定性保障。</textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: 绩效考核指标 -->
+        <div class="card">
+          <div class="card__header">
+            <div>
+              <h2 class="card__title">绩效考核指标</h2>
+              <p class="card__description">最多 8 项，所有指标权重合计应等于 100%</p>
+            </div>
+            <button class="btn btn--secondary btn--small" id="btn-add-kpi">+ 新增指标</button>
+          </div>
+          <div class="card__body">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 26%">指标名称</th>
+                  <th style="width: 12%">权重 (%)</th>
+                  <th style="width: 18%">考核方式</th>
+                  <th style="width: 36%">目标值说明</th>
+                  <th style="width: 8%">操作</th>
+                </tr>
+              </thead>
+              <tbody id="kpi-tbody"></tbody>
+            </table>
+            <div class="kpi-summary">
+              <span>当前权重合计</span>
+              <span class="kpi-summary__value" id="kpi-total">100%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4: 晋升通道 -->
+        <div class="card">
+          <div class="card__header">
+            <div>
+              <h2 class="card__title">晋升通道</h2>
+              <p class="card__description">当前岗位的上下游职级关系，用于年度晋升评审参考</p>
+            </div>
+          </div>
+          <div class="card__body">
+            <div class="career-path">
+              <div class="career-step">
+                <div class="career-step__level">P4</div>
+                <div class="career-step__title">初级前端工程师</div>
+                <div class="career-step__req">本科 · 1-3 年经验</div>
+              </div>
+              <div class="career-step">
+                <div class="career-step__level">P5</div>
+                <div class="career-step__title">前端工程师</div>
+                <div class="career-step__req">本科 · 3-5 年经验</div>
+              </div>
+              <div class="career-step career-step--current">
+                <div class="career-step__level">P6（当前岗位）</div>
+                <div class="career-step__title">高级前端工程师</div>
+                <div class="career-step__req">本科 · 5 年以上</div>
+              </div>
+              <div class="career-step">
+                <div class="career-step__level">P7</div>
+                <div class="career-step__title">资深前端工程师</div>
+                <div class="career-step__req">需独立负责复杂项目</div>
+              </div>
+              <div class="career-step">
+                <div class="career-step__level">P8</div>
+                <div class="career-step__title">前端技术专家</div>
+                <div class="career-step__req">需有架构影响力</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 底部操作栏 -->
+        <div class="page-actions">
+          <div></div>
+          <div class="page-actions__buttons">
+            <button class="btn btn--secondary" id="btn-cancel-2">取消</button>
+            <button class="btn btn--primary" id="btn-save-2">保存配置</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../../../_shared/reference/menu-data.js"></script>
+  <script src="../../../_shared/reference/header.js"></script>
+  <script src="../../../_shared/reference/sidebar.js"></script>
+  <script src="../../../_shared/js/common.js"></script>
+  <script src="../../../_shared/api/routes.js"></script>
+  <script src="../js/pages/form.js"></script>
+</body>
+</html>

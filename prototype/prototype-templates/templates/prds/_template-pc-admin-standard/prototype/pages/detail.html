@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>员工管理系统 - 员工详情</title>
+  <link rel="stylesheet" href="../../../_shared/css/tokens.css">
+  <link rel="stylesheet" href="../../../_shared/css/common.css">
+  <link rel="stylesheet" href="../css/pages/detail.css">
+</head>
+<body>
+  <div class="layout">
+    <div id="app-header"></div>
+    <aside id="app-sidebar"></aside>
+
+    <main class="main-content">
+      <div class="breadcrumb-nav">
+        <a href="../../../index.html">首页</a>
+        <span class="separator">/</span>
+        <a href="#">员工管理</a>
+        <span class="separator">/</span>
+        <a href="list.html">员工列表</a>
+        <span class="separator">/</span>
+        <span class="current">员工详情</span>
+      </div>
+
+      <div class="content-body">
+
+        <!-- 页面操作区 -->
+        <div class="page-actions">
+          <h2 class="page-title" id="page-title">加载中...</h2>
+          <div class="page-actions__buttons">
+            <button class="btn btn--secondary" id="btn-back">返回列表</button>
+            <button class="btn btn--primary" id="btn-edit">编辑信息</button>
+          </div>
+        </div>
+
+        <!-- 第一部分：员工基本信息 -->
+        <div class="card">
+          <div class="card__header card__header--shaded">
+            <h3 class="card__title">员工基本信息</h3>
+          </div>
+          <div class="card__body">
+            <div class="info-grid">
+              <div class="info-item"><div class="info-label">姓名</div><div class="info-value" id="v-name">-</div></div>
+              <div class="info-item"><div class="info-label">工号</div><div class="info-value" id="v-code">-</div></div>
+              <div class="info-item"><div class="info-label">性别</div><div class="info-value" id="v-gender">-</div></div>
+              <div class="info-item"><div class="info-label">出生日期</div><div class="info-value" id="v-birth">-</div></div>
+              <div class="info-item"><div class="info-label">证件类型</div><div class="info-value" id="v-id-type">-</div></div>
+              <div class="info-item"><div class="info-label">证件号码</div><div class="info-value" id="v-id-number">-</div></div>
+              <div class="info-item"><div class="info-label">部门</div><div class="info-value" id="v-department">-</div></div>
+              <div class="info-item"><div class="info-label">岗位</div><div class="info-value" id="v-position">-</div></div>
+              <div class="info-item"><div class="info-label">职级</div><div class="info-value" id="v-level">-</div></div>
+              <div class="info-item"><div class="info-label">直接上级</div><div class="info-value" id="v-direct-report">-</div></div>
+              <div class="info-item"><div class="info-label">入职日期</div><div class="info-value" id="v-join-date">-</div></div>
+              <div class="info-item"><div class="info-label">合同到期</div><div class="info-value" id="v-contract-end">-</div></div>
+              <div class="info-item"><div class="info-label">雇佣类型</div><div class="info-value" id="v-employment-type">-</div></div>
+              <div class="info-item"><div class="info-label">在职状态</div><div class="info-value" id="v-employment-status">-</div></div>
+              <div class="info-item info-item--full-width">
+                <div class="info-label">个人简介</div>
+                <div class="info-value info-value--textarea" id="v-bio">-</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 第二部分：评估指标卡（绿/黄/红三级灯，对应供应商画像的风险卡） -->
+        <div class="card">
+          <div class="card__header card__header--shaded">
+            <h3 class="card__title">年度综合评估</h3>
+            <div class="assessment-legend">
+              <div class="assessment-legend__item">
+                <span class="assessment-legend__light assessment-legend__light--red"></span>
+                <span>需关注</span>
+              </div>
+              <div class="assessment-legend__item">
+                <span class="assessment-legend__light assessment-legend__light--yellow"></span>
+                <span>待改进</span>
+              </div>
+              <div class="assessment-legend__item">
+                <span class="assessment-legend__light assessment-legend__light--green"></span>
+                <span>达标 / 优秀</span>
+              </div>
+            </div>
+          </div>
+          <div class="assessment-cards">
+            <div class="assessment-card" id="ac-work-output">
+              <div class="assessment-card__title">工作产出</div>
+              <div class="assessment-card__body">
+                <span class="assessment-card__light assessment-card__light--green"></span>
+                <span class="assessment-card__text assessment-card__text--green">-</span>
+              </div>
+            </div>
+            <div class="assessment-card" id="ac-team-collab">
+              <div class="assessment-card__title">团队协作</div>
+              <div class="assessment-card__body">
+                <span class="assessment-card__light assessment-card__light--green"></span>
+                <span class="assessment-card__text assessment-card__text--green">-</span>
+              </div>
+            </div>
+            <div class="assessment-card" id="ac-skill-growth">
+              <div class="assessment-card__title">技能成长</div>
+              <div class="assessment-card__body">
+                <span class="assessment-card__light assessment-card__light--yellow"></span>
+                <span class="assessment-card__text assessment-card__text--yellow">-</span>
+              </div>
+            </div>
+            <div class="assessment-card" id="ac-compliance">
+              <div class="assessment-card__title">合规培训</div>
+              <div class="assessment-card__body">
+                <span class="assessment-card__light assessment-card__light--red"></span>
+                <span class="assessment-card__text assessment-card__text--red">-</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 第三部分：多 Tab 详细信息 -->
+        <div class="tabs-container">
+          <div class="tabs-header">
+            <button class="tab-button tab-button--active" data-tab="tab-basic">基本信息</button>
+            <button class="tab-button" data-tab="tab-work-history">
+              工作履历
+              <span class="tab-badge" id="badge-incident">0</span>
+            </button>
+            <button class="tab-button" data-tab="tab-training">
+              培训记录
+              <span class="tab-badge" id="badge-judicial">0</span>
+            </button>
+            <button class="tab-button" data-tab="tab-attendance">考勤统计</button>
+          </div>
+
+          <!-- Tab 1：基本信息 -->
+          <div class="tab-content tab-content--active" id="tab-basic">
+            <h4 class="section-title">人事档案</h4>
+            <table class="data-table">
+              <tbody>
+                <tr>
+                  <td><strong>联系电话</strong></td><td id="v-phone">-</td>
+                  <td><strong>邮箱</strong></td><td id="v-email">-</td>
+                </tr>
+                <tr>
+                  <td><strong>紧急联系人</strong></td><td id="v-emergency">-</td>
+                  <td><strong>现居地址</strong></td><td id="v-address">-</td>
+                </tr>
+                <tr>
+                  <td><strong>学历背景</strong></td><td colspan="3">本科 · 北京航空航天大学 · 计算机科学与技术</td>
+                </tr>
+                <tr>
+                  <td><strong>毕业年份</strong></td><td>2015</td>
+                  <td><strong>工作年限</strong></td><td>9 年</td>
+                </tr>
+                <tr>
+                  <td><strong>核心技能</strong></td>
+                  <td colspan="3">JavaScript / TypeScript / React / Vue / Webpack / 可视化图表</td>
+                </tr>
+                <tr>
+                  <td><strong>专业证书</strong></td>
+                  <td colspan="3">信息系统项目管理师（软考中级）</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h4 class="section-title">团队关系</h4>
+            <div class="sub-tabs">
+              <div class="sub-tabs-header">
+                <button class="sub-tab-button sub-tab-button--active" data-sub-tab="sub-team-direct">直属关系</button>
+                <button class="sub-tab-button" data-sub-tab="sub-team-project">项目协作</button>
+              </div>
+              <div class="sub-tab-content sub-tab-content--active" id="sub-team-direct">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>序号</th><th>姓名</th><th>岗位</th><th>关系</th><th>起始日期</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>1</td><td>王俊杰</td><td>技术总监</td><td>直接上级</td><td>2021-03-15</td></tr>
+                    <tr><td>2</td><td>李思涵</td><td>前端工程师</td><td>直接下属</td><td>2022-01-10</td></tr>
+                    <tr><td>3</td><td>孙浩然</td><td>后端工程师</td><td>同组协作</td><td>2022-06-01</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="sub-tab-content" id="sub-team-project">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>序号</th><th>项目名称</th><th>角色</th><th>协作部门</th><th>起止时间</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>1</td><td>新版客户门户重构</td><td>前端负责人</td><td>市场运营部</td><td>2023-04 ~ 2023-10</td></tr>
+                    <tr><td>2</td><td>数据分析看板 2.0</td><td>核心开发</td><td>财务部 / 数据组</td><td>2024-01 ~ 2024-06</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 2：工作履历 -->
+          <div class="tab-content" id="tab-work-history">
+            <h4 class="section-title">岗位变动记录</h4>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>序号</th><th>变动类型</th><th>原岗位</th><th>新岗位</th><th>原职级</th><th>新职级</th><th>生效日期</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td>晋升</td><td>前端工程师</td><td>高级前端工程师</td><td>P5</td><td>P6</td><td>2023-07-01</td></tr>
+                <tr><td>2</td><td>转岗</td><td>前端工程师（市场组）</td><td>前端工程师（产品组）</td><td>P5</td><td>P5</td><td>2022-03-10</td></tr>
+                <tr><td>3</td><td>入职</td><td>-</td><td>前端工程师</td><td>-</td><td>P5</td><td>2021-03-15</td></tr>
+              </tbody>
+            </table>
+
+            <h4 class="section-title">项目经历</h4>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>序号</th><th>项目</th><th>角色</th><th>贡献概要</th><th>起止</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td>前端公共组件库</td><td>主导者</td><td>0→1 搭建，覆盖 12 个产品线</td><td>2022-05 ~ 至今</td></tr>
+                <tr><td>2</td><td>数据分析看板 2.0</td><td>核心开发</td><td>性能优化 40%，累计访问 20w+</td><td>2024-01 ~ 2024-06</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Tab 3：培训记录 -->
+          <div class="tab-content" id="tab-training">
+            <h4 class="section-title">已完成培训</h4>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>序号</th><th>课程名称</th><th>类别</th><th>学时</th><th>完成日期</th><th>考核结果</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td>新员工入职培训</td><td>通用</td><td>16</td><td>2021-03-22</td><td>优秀</td></tr>
+                <tr><td>2</td><td>前端性能优化进阶</td><td>专业技能</td><td>24</td><td>2022-11-15</td><td>通过</td></tr>
+                <tr><td>3</td><td>跨部门沟通协作</td><td>软技能</td><td>8</td><td>2023-05-08</td><td>通过</td></tr>
+              </tbody>
+            </table>
+
+            <h4 class="section-title">待完成培训</h4>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>序号</th><th>课程名称</th><th>类别</th><th>要求完成日期</th><th>当前进度</th><th>状态</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td>信息安全意识培训（年度）</td><td>合规</td><td>2026-03-31</td><td>0%</td><td><span class="status-badge status-badge--danger">已逾期</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Tab 4：考勤统计 -->
+          <div class="tab-content" id="tab-attendance">
+            <h4 class="section-title">本年考勤概要</h4>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>月份</th><th>应出勤</th><th>实际出勤</th><th>休假</th><th>加班</th><th>迟到 / 早退</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>2026-01</td><td>22</td><td>22</td><td>0</td><td>12</td><td>0</td></tr>
+                <tr><td>2026-02</td><td>18</td><td>18</td><td>0</td><td>5</td><td>1</td></tr>
+                <tr><td>2026-03</td><td>22</td><td>21</td><td>1</td><td>8</td><td>0</td></tr>
+                <tr><td>2026-04</td><td>15</td><td>15</td><td>0</td><td>3</td><td>0</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../../../_shared/reference/menu-data.js"></script>
+  <script src="../../../_shared/reference/header.js"></script>
+  <script src="../../../_shared/reference/sidebar.js"></script>
+  <script src="../../../_shared/js/common.js"></script>
+  <script src="../../../_shared/api/routes.js"></script>
+  <script src="../mock/employees.js"></script>
+  <script src="../js/services/employeeService.js"></script>
+  <script src="../js/pages/detail.js"></script>
+</body>
+</html>

@@ -1,0 +1,173 @@
+/* 员工列表页特有样式 */
+
+/* ============== 查询区规范（依据 查询区UI规范.md） ============== */
+.filter-section {
+  background-color: #f5f7fa !important;
+  border: 1px solid #e8eaed !important;
+  border-radius: var(--radius-md);
+  padding: var(--spacing-4) !important;
+  margin-bottom: var(--spacing-6) !important;
+  box-shadow: none !important;
+}
+
+/* 4 列栅格：3 字段 + 1 按钮组 */
+.filter-form,
+.filter-form--secondary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: 20px;
+  row-gap: 16px;
+  align-items: end;
+}
+
+.filter-form .form-group {
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Label 顶部对齐 */
+.filter-form .form-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-2);
+  font-size: var(--font-size-base);
+  color: var(--color-text-body);
+}
+
+.filter-form .form-input,
+.filter-form .form-select {
+  height: 34px !important;
+  width: 100%;
+}
+
+/* Input × 清除图标 */
+.input-wrapper {
+  position: relative;
+}
+
+.input-wrapper .form-input {
+  padding-right: 28px;
+}
+
+.input-clear {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #c9cdd4;
+  color: #fff;
+  font-size: 12px;
+  line-height: 16px;
+  text-align: center;
+  cursor: pointer;
+  display: none;
+  border: none;
+  padding: 0;
+}
+
+.input-wrapper.has-value .input-clear {
+  display: inline-block;
+}
+
+.input-clear:hover {
+  background: #6b7280;
+}
+
+/* 日期范围：快捷项与 label 同行右端 */
+.label-with-shortcuts {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-2);
+  font-size: var(--font-size-base);
+  color: var(--color-text-body);
+}
+
+.date-shortcuts {
+  display: inline-flex;
+  gap: 10px;
+}
+
+.date-shortcuts a {
+  font-size: 12px;
+  color: var(--color-primary);
+  cursor: pointer;
+}
+
+.date-shortcuts a:hover {
+  text-decoration: underline;
+}
+
+/* 操作按钮组：始终占第 4 格，与输入框底部对齐 */
+.filter-actions {
+  grid-column: 4 / 5;
+  display: flex;
+  gap: var(--spacing-2);
+  justify-content: flex-end;
+  align-items: flex-end;
+  height: 100%;
+}
+
+.filter-actions .btn {
+  height: 34px;
+  padding: 0 var(--spacing-4);
+  font-size: var(--font-size-base);
+}
+
+.filter-actions .btn--text {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 var(--spacing-2);
+  height: 34px;
+  background: none;
+  border: none;
+  color: var(--color-primary);
+}
+
+.expand-icon {
+  display: inline-block;
+  font-size: 10px;
+  transition: transform var(--transition-base);
+}
+
+.filter-section.expanded .expand-icon {
+  transform: rotate(180deg);
+}
+
+/* 展开区 */
+.filter-expand {
+  margin-top: 16px;
+  animation: expand-in var(--transition-base);
+}
+
+@keyframes expand-in {
+  from { opacity: 0; max-height: 0; }
+  to { opacity: 1; max-height: 800px; }
+}
+
+/* ============== 表格与状态 ============== */
+.action-column {
+  display: flex;
+  gap: 12px;
+}
+
+.status-badge + .status-badge {
+  margin-left: 6px;
+}
+
+/* ============== 响应式（严格按规范断点） ============== */
+@media (max-width: 1200px) {
+  .filter-form,
+  .filter-form--secondary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .filter-actions {
+    grid-column: 2 / 3;
+  }
+}
