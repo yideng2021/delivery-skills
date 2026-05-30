@@ -43,6 +43,7 @@ spec_wf/
 ├── spec-critic-skill/              # 软门(LLM-as-Judge,三态裁决)
 ├── requirements-bookkeeping-skill/ # 项目级账本(REQUIREMENTS.md / ROADMAP.md;字段被动握手)
 ├── shared/                         # 横切契约 + 行为协议 + 模板
+│   ├── glossary.md                     # spec-wf 术语对齐表(跨文件语义锚点 / 速查索引)
 │   ├── contracts/
 │   │   ├── frontmatter-schema.md       # 字段权威(20 字段,human-readable)
 │   │   ├── frontmatter.schema.json     # 字段权威(JSON Schema,machine-checkable)
@@ -295,6 +296,7 @@ workflow 不再"甩锅给用户";失败必有显式状态字段表达,详见 [`s
 | 要做 critic 审查 | [`spec-critic-skill/SKILL.md`](spec-critic-skill/SKILL.md) + [`references/critic-protocol.md`](spec-critic-skill/references/critic-protocol.md) |
 | 要维护项目级需求账本 | [`requirements-bookkeeping-skill/SKILL.md`](requirements-bookkeeping-skill/SKILL.md) + [`references/handshake-protocol.md`](requirements-bookkeeping-skill/references/handshake-protocol.md) |
 | 要在生成前与用户对齐(proposal 强制) | [`shared/protocols/clarification-gate-protocol.md`](shared/protocols/clarification-gate-protocol.md) + [`proposal-writer-skill/SKILL.md`](proposal-writer-skill/SKILL.md) |
+| 要查术语对齐 / 跨文件名词速查 | [`shared/glossary.md`](shared/glossary.md) — 工作流产物 / frontmatter 字段 / AC 编号 / skill 简称 / 铁律 |
 | 要看字段语义 | [`shared/contracts/frontmatter-schema.md`](shared/contracts/frontmatter-schema.md)(20 字段总表)+ [`frontmatter.schema.json`](shared/contracts/frontmatter.schema.json) |
 | 要看词表 | [`shared/contracts/change-verbs.md`](shared/contracts/change-verbs.md)(9 词全集 + 5 处 sub-select) |
 | 要看失败降级 | [`spec-design-workflow/references/failure-recovery.md`](spec-design-workflow/references/failure-recovery.md) |

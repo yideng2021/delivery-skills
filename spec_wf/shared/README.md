@@ -11,6 +11,7 @@
 ```
 shared/
 ├── README.md                              本文件,导航与一句话用途
+├── glossary.md                            spec-wf 术语对齐表(跨文件引用的语义锚点)
 ├── contracts/                             静态契约(数据/枚举/口径)
 │   ├── frontmatter-schema.md              20 字段权威定义(human-readable)
 │   ├── frontmatter.schema.json            20 字段权威定义(machine-checkable)
