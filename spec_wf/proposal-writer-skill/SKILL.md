@@ -62,3 +62,7 @@ description: >
 - 共享契约:[`../shared/contracts/`](../shared/contracts/) / [`../shared/protocols/`](../shared/protocols/)
 - **CG 闸门协议**:[`../shared/protocols/clarification-gate-protocol.md`](../shared/protocols/clarification-gate-protocol.md)(生成前澄清)
 - 机械校验:`node ../scripts/validate.mjs docs/spec/{change_name}/`
+
+## 棕地按需嵌入(可选,P2)
+
+> 若 §0 盘点中发现「与既有功能的**业务冲突**」或需「**重构 / 替换既有能力**」,建议调用 [`brownfield-impact-analyzer`](../brownfield-impact-analyzer-skill/SKILL.md) 产出咨询件 `impact.md`;其 §2 冲突点 / §3 影响面 / §4 侵入建议可作为本 proposal §0.3 「既有约束与历史决策」与 §2 「关联既有资产 / Blast Radius」的**素材引用**(被动引用,不强耦合)。`impact.md` **不进** 主 schema 校验,**不修改** 本 proposal 正文与 frontmatter。

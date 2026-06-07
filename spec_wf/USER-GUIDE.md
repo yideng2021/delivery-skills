@@ -33,6 +33,21 @@
 - 纯探索性 spike(还不知道要做什么,先写代码摸边界更高效)
 - 紧急 hotfix(直接改代码后补 minimal proposal 即可)
 
+### 🛠 棕地改动 — 用「影响诊断器」先看清再设计
+
+棕地工程上做 bug 修复 / 功能扩展 / 局部重构,动手前往往需要先看清"会撞到哪、该遵循哪些降耦合原则"。spec-wf 为此提供独立的 [`brownfield-impact-analyzer-skill`](brownfield-impact-analyzer-skill/SKILL.md)(棕地领域的诊断器,与 critic 正交):
+
+- **何时用**:你想改某个既有方法 / 接口 / 模块,但不确定会撞到哪、怎么低耦合地改
+- **它做什么**:产出咨询件 `impact.md`——①改动意图 ②冲突点 ③影响面 ④侵入/接缝建议 ⑤低耦合/低影响**设计规则**(通用工程原则,如 Expand-Contract / 防腐层 / Branch by Abstraction)
+- **它不做什么**:不设计具体回滚开关、不写特征测试、不裁决"要不要进 4 步链"——这些由 proposal(Backout)/ spec(DoD、迁移)/ design(ADR)各自完成。**分工明确。**
+- **怎么触发**:
+  1. **独立调用**:「分析:把 OrderService.cancel 的退款流程从同步改成异步,会撞到哪、该遵循哪些降耦合原则」
+  2. **嵌入调用**:proposal §0 发现业务冲突、spec `impacted_modules` 含既有重构、design 涉及既有 BC/模块改造时,各 writer 会建议调用
+- **怎么用产物**:`impact.md` 是**素材**,由 writer 被动引用——proposal 引 §2/§3、spec 引 §3 做 Diff/迁移、design 引 §4/§5 做 ADR 与模块契约
+
+> 一句话:它只负责"诊断 + 给通用原则",具体怎么设计落地仍由 spec/design 决定。
+> 详见 [`brownfield-impact-analyzer-skill/SKILL.md`](brownfield-impact-analyzer-skill/SKILL.md)。
+
 ---
 
 ## 2. 准备工作(只做一次)

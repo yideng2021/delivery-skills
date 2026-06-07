@@ -65,17 +65,51 @@
 
 完整定义见 [`./contracts/ac-vocabulary.md`](./contracts/ac-vocabulary.md);以下为术语速查。
 
+### §3.0 AC 体系总览
+
+| 术语 | 一句话定义 | 广义vs狭义 | 备注 |
+|------|----------|----------|------|
+| **AC**(Acceptance Criteria) | **验收标准**:系统行为/规则的可验证标准,由数据级/功能级/规则级三层构成 | 广义 = 三层合一;狭义 = L3 功能级 | "AC 唯一来源" 中的 AC 指广义;各层写作指南中的 AC 有狭义指代 |
+| **L0-L4**(分层体系) | spec 从业务背景逐层细化至工程交付的 5 层递进;各层有不同的验收职责 | — | L0 背景/L1 故事/L2 规则/L3 行为/L4 勾选;分层的 AC 含义见下表 |
+| **REQ**(需求标识) | L1 US 声明的需求槽位标识,对应 L3 AC 编号的前缀(如 `AUTH-signup` 对应 `AC-signup-01`) | — | REQ 在 L1 一次声明;L3 AC 多次复用同一 REQ(多个场景) |
+| **EARS** | Easy Approach to Requirements Syntax,自然语言句式规范;L3 AC 的文本表现形式 | — | 5 种句式(`The system shall.../When.../While.../Where.../If...`);见 [`../spec-writer-skill/references/ears-gherkin-cheatsheet.md`](../spec-writer-skill/references/ears-gherkin-cheatsheet.md) |
+| **Gherkin** | BDD 场景语言;L3 AC 对应一段 Gherkin Scenario(Given/When/Then 结构) | — | 与 EARS 句一一配对;Scenario 标题必须以 `AC-{req}-{seq}` 开头 |
+| **Scenario**(场景) | Gherkin 中一条可执行的场景,包含前置状态(Given)/触发动作(When)/可观察结果(Then) | — | 每条 L3 AC = EARS 句 + 一段 Scenario;一个 REQ 可有多个 Scenario |
+| **BDD**(行为驱动开发) | Behavior-Driven Development,用可执行的业务场景(Gherkin)直接驱动测试和实现的开发范式 | — | spec L3 AC 采用 BDD 思想:"每条 AC 必须可由 BDD 测试覆盖" |
+| **DMN**(决策模型) | Decision Model and Notation,用决策表 + BKM + DRD 表示复杂交叉规则的标准语言;L3 **规则级 AC** | 可选 | 启用 DMN 时,每行决策表 (R1,R2,...) 成为**规则级 AC**;不启用时,规则在 L2 INV 或 L3 Gherkin 表达 |
+
+**AC 唯一来源(广义)**:`L2 INV-x ∪ L3 AC-{req}-{seq} ∪ L3 DMN-xxx-Rn`(后者可选)。
+
+### §3.1 AC 三层口径与编号
+
 | 术语 | 层 | 一句话 | 关键约束 |
 |------|---|-------|---------|
 | **L0** | spec 背景 | 业务上下文 + **业务禁区**(本次显式不做的范围) | L0 不承载 AC;禁区作为 L4 守卫 |
 | **L1 US-{n}** | spec 用户故事 | 角色-动作-收益的故事单元 | L1 不写 AC;`关联 REQ` 字段在此一次声明 |
 | **L2 INV-{n}** | spec 业务不变量 | 业务永真规则,**数据级 AC** | 必须可由静态快照判定;L4 逐条勾选 |
 | **L3 AC-{req}-{seq}** | spec 行为规约 | EARS + Gherkin 场景,**功能级 AC** | 每条 AC 必须可由 BDD 测试覆盖 |
-| **L3 DMN-{xxx}-R{n}** | spec 决策表行 | 复杂业务规则的决策表行,**规则级 AC**(按需启用) | 启用判据见 [`../spec-writer-skill/references/dmn-when-and-how.md`](../spec-writer-skill/references/dmn-when-and-how.md) |
+| **L3 DMN-{xxx}-R{n}** | spec 决策表行 | 复杂业务规则的决策表行,**规则级 AC**(按需启用);R{n}编号指决策表第 n 行 | 启用判据见 [`../spec-writer-skill/references/dmn-when-and-how.md`](../spec-writer-skill/references/dmn-when-and-how.md);不启用时规则归 L2/L3 |
 | **L4 DoD** | spec 完成定义 | 反向勾选所有 INV-x / AC / DMN + 工程闭环 + 禁区守卫 | **零新增**:不引入 L2/L3 之外的验收点 |
 | **AUTH-ID** | 项目级账本 | RBK 维护的能力槽编号(如 `AUTH-01`) | **D4 强约束**:一 AUTH 一 spec(同一时刻) |
 
-**AC 唯一来源**:`L2 INV ∪ L3 AC-{req}-{seq} ∪ L3 DMN-Rn`。
+### §3.2 增量标注与复用标记
+
+| 术语 | 形式 | 适用场景 | 作用 |
+|------|------|---------|------|
+| **增量标注 5 项闭集** | `{[新增], [已有·仅引用], [已有·扩展], [已有·修改], [已有·废弃]}` | spec 正文每条 US/INV/AC 旁;design 的 reused_modules/bc_relations | 显式标记每条规约相对既有工程的增量性质;与 `change_mode` 联动 |
+| **[新增]** | `[新增]` 标注 | 本 change 新引入的规约 | 必须通过 design §5 ADR 三问自检(既有资产检索充分性) |
+| **[已有·仅引用]** | `[已有·仅引用]` 标注 | 仅引用既有规约,无修改 | 追溯既有实现;在 design 复用充分性检查时不额外抽查 |
+| **[已有·扩展]** | `[已有·扩展]` 标注 | 在既有规约基础上增加新分支/新场景 | 必须配 Diff 表(既有 vs 新增部分);映射到 design 新模块或既有模块的增强 |
+| **[已有·修改]** | `[已有·修改]` 标注 | 修改既有规约的原有行为/规则 | 必须配 Diff 表 + 迁移路径 + 兼容期窗口(如有);可按需调用 brownfield-impact-analyzer 做影响分析 |
+| **[已有·废弃]** | `[已有·废弃]` 标注 | 标记本 change 中停用的既有规约 | 必须配迁移路径 + 废弃期限;任何系统继续使用被废弃的 AC 时在 tasks 中显式标记"兼容既有" |
+
+### §3.3 关键名词澄清
+
+| 术语 | 定义 | 与 AC 的关系 |
+|------|------|------------|
+| **AC vs ACL** | AC = Acceptance Criteria (验收标准);ACL = Access Control List(访问控制清单) | **完全不同**;设计中的"ACL 隔离"是 DDD Context Map 概念,不是 AC |
+| **REQ vs AUTH** | REQ = L1 US 中声明的需求槽位(短暂的,编号如 `signup`);AUTH = RBK 项目级能力槽(持久的,编号如 `AUTH-01`) | REQ 对应 AC 编号的前缀;AUTH 对应 spec 的 related_req 字段;两个编号空间正交 |
+| **spec vs 需求文档** | spec = 本次 change 要实现的**业务规约**(L0-L4);需求文档 = 项目级全量需求(REQUIREMENTS.md 由 RBK 维护) | AC 仅来自本 spec 的 L2/L3,不包含其他 change 的规约;跨 change 关联靠 AUTH-ID |
 
 ```
 AUTH-ID(项目级)─┐
@@ -118,9 +152,9 @@ L4 DoD ── 反向勾选所有上述编号 + 工程闭环 + L0 禁区守卫
 
 | 视角 | 出处 | 词表来源 |
 |------|------|---------|
-| **业务/工程级** | proposal §0(既有资产盘点三表) | [`./contracts/change-verbs.md`](./contracts/change-verbs.md) §2 第 4-5 行 |
-| **业务级**(增量标注 5 项) | spec 行级标注 + `reused_modules.annotation` | [`./contracts/change-verbs.md`](./contracts/change-verbs.md) §2 第 1 行 `{[新增], [已有·仅引用], [已有·扩展], [已有·修改], [已有·废弃]}` |
-| **架构级**(BC 关系 DDD 5 项) | design `bc_relations.relation` | [`./contracts/change-verbs.md`](./contracts/change-verbs.md) §2 第 2 行 `{沿用, 扩展, 新建, ACL隔离, 替换}` |
+| **业务/工程级** | proposal §0(既有资产盘点三表) | [`./contracts/change-verbs.md`](./contracts/change-verbs.md) §2 第 4-5 行;变更方向 6 项(沿用/扩展/修改/废弃/替换/并存) |
+| **业务级**(增量标注 5 项,详见 §3.2) | spec 正文行级标注 + design 的 `reused_modules.annotation` / `bc_relations` | `{[新增], [已有·仅引用], [已有·扩展], [已有·修改], [已有·废弃]}` 闭集;见 [`./contracts/change-verbs.md`](./contracts/change-verbs.md) §2 第 1 行 |
+| **架构级**(BC 关系 DDD 5 项) | design `bc_relations.relation` | `{沿用, 扩展, 新建, ACL隔离, 替换}` 闭集;见 [`./contracts/change-verbs.md`](./contracts/change-verbs.md) §2 第 2 行 |
 
 > 复用充分性自检三问(design `[新增]` 模块强制):①已检索 proposal §0.2? ②已检索 reused_modules? ③为何新建而非扩展? 详见 [`../design-writer-skill/references/existing-architecture-landscape.md`](../design-writer-skill/references/existing-architecture-landscape.md)。
 
@@ -208,11 +242,13 @@ L4 DoD ── 反向勾选所有上述编号 + 工程闭环 + L0 禁区守卫
 | 文件 | 关系 |
 |------|------|
 | [`./contracts/frontmatter-schema.md`](./contracts/frontmatter-schema.md) | **字段权威**;本表 §2 是其速查摘要,完整定义看 schema |
-| [`./contracts/ac-vocabulary.md`](./contracts/ac-vocabulary.md) | **AC 口径权威**;本表 §3 是其速查摘要 |
-| [`./contracts/change-verbs.md`](./contracts/change-verbs.md) | **动词词表权威**;本表 §4.3 是其速查摘要 |
+| [`./contracts/ac-vocabulary.md`](./contracts/ac-vocabulary.md) | **AC 口径权威**;本表 §3.0-§3.3 是其速查摘要,完整定义(含 INV/AC/DMN/DoD 具体写法)看 ac-vocabulary |
+| [`./contracts/change-verbs.md`](./contracts/change-verbs.md) | **增量标注与动词词表权威**;本表 §3.2 与 §4.3 是其速查摘要 |
 | [`./contracts/handover-domains.md`](./contracts/handover-domains.md) | **承接方闭集权威**;本表 §2 仅列 5 枚举 |
 | [`./contracts/empty-value-convention.md`](./contracts/empty-value-convention.md) | **空值约定权威**;本表未涉及 |
 | [`./protocols/`](./protocols/) | 4 个横切协议;本表 §4.2 给入口与一句话定义 |
 | [`../spec-wf总结.md`](../spec-wf总结.md) | **设计原理总览**;本表是其术语索引 |
+| [`../spec-writer-skill/references/ears-gherkin-cheatsheet.md`](../spec-writer-skill/references/ears-gherkin-cheatsheet.md) | **EARS 与 Gherkin 写法速查**;本表 §3.0 给定义入口,详细句式与示例看 cheatsheet |
+| [`../spec-writer-skill/references/dmn-when-and-how.md`](../spec-writer-skill/references/dmn-when-and-how.md) | **DMN 启用判据与嵌入规则权威**;本表 §3.0-§3.1 给总体定义,启用/禁用/去重细则看此文件 |
 
 > 新增术语流程:① 在本表对应章节追加一行 + 链接到具体定义文件 ② 若术语已有专门 shared/contracts 或 references 文件,本表只放速查不放完整定义 ③ 若无,优先在 contracts 或 protocols 落地一个权威文件,再回本表挂链接。

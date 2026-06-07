@@ -41,6 +41,7 @@ spec_wf/
 ├── design-writer-skill/            # 阶段三:架构契约(含 L3 ToolCall 确认门)
 ├── task-decomposer-skill/          # 阶段四:工单拆解(可 shadow 出 TodoWrite)
 ├── spec-critic-skill/              # 软门(LLM-as-Judge,三态裁决)
+├── brownfield-impact-analyzer-skill/ # 棕地影响分析器(critic 范式,按需嵌入;产 impact.md 咨询件)
 ├── requirements-bookkeeping-skill/ # 项目级账本(REQUIREMENTS.md / ROADMAP.md;字段被动握手)
 ├── shared/                         # 横切契约 + 行为协议 + 模板
 │   ├── glossary.md                     # spec-wf 术语对齐表(跨文件语义锚点 / 速查索引)
@@ -259,6 +260,52 @@ workflow 不再"甩锅给用户";失败必有显式状态字段表达,详见 [`s
 | `escalated` | 需架构级返工 / 上游变更 | 改 target `status: reviewed → escalated`(触发 F2) |
 
 详见 [`spec-critic-skill/references/critic-protocol.md`](spec-critic-skill/references/critic-protocol.md)。
+
+---
+
+## 八·B、棕地按需分析(brownfield-impact-analyzer-skill)
+
+> 棕地领域的**影响诊断器**,与 critic **正交**:critic 审规约逻辑,本 skill 看代码影响面。
+> **按需嵌入**于 proposal / spec / design-writer,或由用户**独立调用**;产**咨询件 `impact.md`**(不进主 schema 校验)。
+> **纯诊断**:只给"会撞到哪 + 通用降耦合原则",**不**给具体落地方案 / 回滚 / 测试 / 路由——这些处置交 proposal(Backout)、spec(DoD/迁移)、design(ADR)各自承担。
+> 详见 [`brownfield-impact-analyzer-skill/SKILL.md`](brownfield-impact-analyzer-skill/SKILL.md)。
+
+### 8B.1 三入口(同 critic 形态)
+
+| 入口 | 触发场景 | impact.md 落点 |
+|------|---------|----------------|
+| proposal-writer 按需调用 | §0 盘点发现业务冲突 / 重构 | `docs/spec/{change_name}/impact.md` |
+| spec-writer 按需调用 | `impacted_modules` 含既有重构 / 关键接口调整 | 同上 |
+| design-writer 按需调用 | `reused_modules` 含 `[已有·修改]`/`[已有·废弃]` 或 ADR 涉及既有 BC/模块改造 | 同上 |
+| 用户独立调用 | 「分析这次改动会撞到哪 / 怎么低耦合地改」 | 用户指定路径 |
+
+### 8B.2 产物 impact.md 5 节结构
+
+`1.改动意图 → 2.冲突点 → 3.影响面 → 4.侵入/接缝建议 → 5.低耦合/低影响设计规则`
+
+- 局部 frontmatter(`change_ref` / `analyzed_at` / `invasion_tier` / `has_conflict`),**不**进主 schema 校验
+- §5 只给**通用工程原则名 + 适用条件**(Expand-Contract / 防腐层(ACL) / Branch by Abstraction / Additive-only / Façade / DIP 等),作为给 design/spec 的参考;**不**给具体代码 / 回滚 key / 测试断言
+- **不改** 任何 writer 正文与 frontmatter、**不触发** workflow 转移
+
+### 8B.3 诊断 / 处置分工(分工明确,不越位)
+
+| 关注 | 谁做 | 落点 |
+|------|------|------|
+| 影响诊断 + 降耦合原则 | brownfield-impact-analyzer | impact.md(咨询) |
+| 具体回滚 / 灰度策略 | proposal | §2 Backout |
+| 既有行为钉住(特征测试)/ 迁移 | spec / dev | L4 DoD、`[已有·修改]` Diff + 迁移路径 |
+| 具体结构落地 | design | §5 ADR、§3 模块契约 |
+| "要不要进规约链" 的路由裁决 | proposal 自身(必要时 brownfield-micro 折叠档) | — |
+
+### 8B.4 与既有机制的零冲突声明
+
+| 机制 | 是否受影响 |
+|------|-----------|
+| frontmatter-schema.md 20 字段 | **不**新增、**不**修改 |
+| validate.mjs(I-A~I-F / C1~C7) | **0** 处改动 |
+| CG 协议 | 复用既有,**不**新开第二道闸 |
+| proposal / spec / design 三 writer 的 SKILL.md | 各加 1 节按需触发提示,**0** 改不变量 / 模板 / 字段 |
+| critic / RBK / workflow | 完全正交,**0** 命令名耦合;**不**进状态机 |
 
 ---
 

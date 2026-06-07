@@ -148,8 +148,11 @@ C1 ~ C7 是 schema 抓不到的"软契约":
 | **简化合并**(本次) | 工具链对外面过宽,门槛偏高 | `critic-checks.mjs` 合并入 `validate.mjs`;删 `estimate.mjs` / `cost-model.md`;eval 收敛为维护者用具(仅 `MAINTENANCE.md` 引导) |
 | **RBK 对齐**(本次) | RBK 文档术语与 spec-wf 主体脱节(sibling 名错误 / 命令名硬编码 / U5 越界写 spec / D4 表述过时) | RBK 4 个文件按"字段被动握手 + 边界收紧"重写;USER-GUIDE §7.4 加 RBK 入口节;spec-wf总结目录树补 RBK 行 |
 | **CG 闸门**(本次) | AI 凭半吊子需求一口气脑补 proposal,CDR 只做生成后兜底,缺失"生成前信息收集" | 新增 `shared/protocols/clarification-gate-protocol.md`;proposal-writer 不变量 §10 强制 CG;validate.mjs C7 audit;2 个 eval case;§4 示例展示 CG 块 |
+| **棕地影响诊断器**(本次) | 棕地改动缺"动手前先看清冲突/影响/降耦合原则"的可复用能力 | 新增 `brownfield-impact-analyzer-skill`(critic 范式,纯诊断,产咨询件 `impact.md`,5 节);proposal/spec/design 三 writer 各加「棕地按需嵌入」节。**零 schema / validator 改动**(impact.md 同 critic.md 不进主校验);**不进** eval(无机械校验项) |
 
 > RBK(`requirements-bookkeeping-skill`)是 spec-wf 体系早期就存在的 sibling skill,**不属于** Batch 1/2/3 重构产物;它独立演进多轮后由本次对齐才与主体术语统一。
+>
+> brownfield-impact-analyzer 同理是 sibling skill:**不进** workflow 状态机、**不进**主 schema 校验、**不进** eval;它只被 writer 按需调用,产出咨询件供被动引用。维护时**不要**给它加 validator 规则或 frontmatter 字段(那会重蹈被废弃的 v3 过度设计)。
 
 ### 仍有效的设计决策(演进时务必尊重)
 

@@ -64,3 +64,7 @@ description: 把 proposal 的战略意图翻译为业务级可验证规约(`docs
 - 验收清单:[`references/checklist.md`](references/checklist.md)
 - **严禁事项**:[`references/redlines.md`](references/redlines.md)
 - 机械校验:`node ../scripts/validate.mjs docs/spec/{change_name}/`
+
+## 棕地按需嵌入(可选,P2)
+
+> 若 `impacted_modules` 中存在「**既有重构、关键接口调整等影响现有工程**」的情况,建议调用 [`brownfield-impact-analyzer`](../brownfield-impact-analyzer-skill/SKILL.md) 产出咨询件 `impact.md`;其 §3 影响面 / §5 低耦合设计规则(迁移类:Additive-only / 双写迁移)可作为本 spec 增量标注 `[已有·修改]` / `[已有·废弃]` 的 **Diff 表 / 迁移路径**输入素材(被动引用,不强耦合)。`impact.md` 为**诊断咨询件**:只给影响事实与通用原则,具体迁移方案由本 spec 设计;它**不进** 主 schema 校验,**不修改** 本 spec 正文与 frontmatter。
