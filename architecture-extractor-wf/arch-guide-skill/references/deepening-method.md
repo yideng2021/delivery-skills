@@ -2,7 +2,7 @@
 
 > 把一个核心业务域展开成自洽完整的 `domain-*.md`。本法是**域级编排**:在 6 步流程重建法之上,
 > 对域内多条主流程逐一重建,再拼装成域叙事。
-> 6 步法本体:[`../../brownfield-onboarding-skill/references/reconstruction-method.md`](../../brownfield-onboarding-skill/references/reconstruction-method.md)。
+> 6 步法本体:[`../../arch-baseline-skill/references/reconstruction-method.md`](../../arch-baseline-skill/references/reconstruction-method.md)。
 
 ---
 

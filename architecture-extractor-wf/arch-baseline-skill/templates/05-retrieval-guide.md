@@ -21,27 +21,27 @@
 
 ---
 
-## 二、与 spec_wf 的对接
+## 二、下游消费（产物级、零耦合）
 
-> 本认知层是 spec_wf 的**前置现状输入**，零命令耦合——各 writer 在以下节点**主动查询**本层。
+> 本认知层产出独立产物，可被任意下游按"存在即用、缺失则降级"的方式消费；本层**不感知**任何特定下游。
 
-### 2.1 proposal-writer → §0 既有资产盘点
+### 2.1 现状盘点（既有能力 / 模块触达）
 
-| §0 子项 | 查询方式 |
+| 想盘点 | 查询方式 |
 |---|---|
-| §0.1 业务能力触达 | 读 `01` 业务域 → `gitnexus context(关键符号)` 确认 |
-| §0.2 工程模块触达 | 读 `01`/`02` 入口锚点 → `codegraph_impact(目标符号)` 看触达模块 |
-| §0.3 风险与 Backout | `codegraph_impact` + `gitnexus impact` 取爆炸半径 + 跨域触点（如 MQ/RPC/外部系统） |
+| 业务能力触达 | 读 `01` 业务域 → `gitnexus context(关键符号)` 确认 |
+| 工程模块触达 | 读 `01`/`02` 入口锚点 → `codegraph_impact(目标符号)` 看触达模块 |
+| 风险 / 回退面 | `codegraph_impact` + `gitnexus impact` 取爆炸半径 + 跨域触点（如 MQ/RPC/外部系统） |
 
-### 2.2 design-writer → §5 ADR 复用三问
+### 2.2 复用决策取证（扩展 vs 新建）
 
-| ADR 三问 | 查询方式 |
+| 要回答 | 查询方式 |
 |---|---|
-| 已检索既有资产没？ | 读 `01` 业务域 + `02` 流程索引 |
-| 该能力是否已有自然责任方？ | `gitnexus context` / `cypher MEMBER_OF` 看目标能力归属哪个既有域 |
-| 为何新建而非扩展？ | `codegraph_impact` 评估扩展既有模块影响面 vs 新建成本 |
+| 既有资产是否已盘点 | 读 `01` 业务域 + `02` 流程索引 |
+| 某能力是否已有责任方 | `gitnexus context` / `cypher MEMBER_OF` 看归属域 |
+| 为何新建而非扩展 | `codegraph_impact` 评估扩展既有模块影响面 vs 新建成本 |
 
-### 2.3 task-decomposer → 影响面驱动拆分
+### 2.3 影响驱动拆分
 
 `codegraph_impact` / `gitnexus detect_changes` 把"改动爆炸半径"换算成任务边界与依赖。
 

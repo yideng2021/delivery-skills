@@ -21,11 +21,6 @@
 
 **禁止**：把 §0.2 写成 §0.1 的复述（业务能力 ≠ 代码模块）；把 §0.3 写成 §0.1 / §0.2 的总结。
 
-> **棕地认知基线优先**（若可用）：目标仓存在 `.brownfield/`（sibling skill `brownfield-onboarding` 产出）时，
-> §0.1 据 `01-architecture.md` 业务域、§0.2 据 `01`/`02` 入口锚点 + `codegraph_impact` 取触达模块、
-> §0.3 据 `codegraph_impact` + `gitnexus impact` 取爆炸半径与跨域触点——**优于裸 grep**。
-> 用法见 `.brownfield/05-retrieval-guide.md` §2.1；无 `.brownfield/` 时回退代码搜索。
-
 ---
 
 ## §2 §0.1 写作要点

@@ -1,9 +1,10 @@
-# architecture-guide-skill
+# arch-guide-skill
 
-> **一句话定位**:把 `brownfield-onboarding` 产出的薄业务域地图,展开成供**人**学习/交接/介绍的**完整架构导览**。
+> **一句话定位**:把 `arch-baseline` 产出的薄业务域地图,展开成供**人**学习/交接/介绍的**完整架构导览**。
 
-`architecture-guide` 是 brownfield-onboarding 的**下游厚产物 skill**。onboarding 产薄地图(给 MCP agent 活查询),
-本 skill 产厚导览(给人通读)。两者服务不同消费者,共享前置闸门、6 步重建法与回链纪律。
+`arch-guide` 是 `architecture-extractor-wf`(棕地架构提取 workflow 域)内的**下游厚产物 skill**。
+arch-baseline 产薄地图(给带 MCP 的消费方活查询),本 skill 产厚导览(给人通读)。两者服务不同消费者,
+共享前置闸门、6 步重建法与回链纪律。本 wf 与任何规约/交付流水线**解耦**。
 
 ---
 
@@ -23,18 +24,18 @@
 ## 安装
 
 无 CLI 安装。AI 入口 [`./SKILL.md`](./SKILL.md)。前置:目标仓双索引就绪并过前置闸门,且已有人审过的
-`.brownfield/01-architecture.md`(无则先跑 brownfield-onboarding)。
+`.brownfield/01-architecture.md`(无则先跑 arch-baseline)。
 
 ## 平台兼容
 
-- 上游依赖 [`../brownfield-onboarding-skill/`](../brownfield-onboarding-skill/):复用其前置闸门与 6 步重建法。
-- 下游(可选):导览可作 spec-wf design-writer 的 `architecture_refs.path` 来源。
-- 不进入 proposal→spec→design→tasks 4 步链;不修改目标仓源码与 `docs/spec/`。
+- 上游依赖同域 [`../arch-baseline-skill/`](../arch-baseline-skill/):复用其前置闸门与 6 步重建法。
+- 下游:产物为独立的 `.brownfield/architecture/`,可被任意下游消费;不感知、不依赖任何特定下游。
+- 不修改目标仓源码。
 
 ## 文件结构
 
 ```
-architecture-guide-skill/
+arch-guide-skill/
 ├── README.md                          ← 本文件(人类导航)
 ├── SKILL.md                           ← AI 入口
 ├── templates/
@@ -54,4 +55,4 @@ architecture-guide-skill/
 
 - 不修改 `01-architecture.md`(保持薄、保持 agent 可扫)。
 - 不为支撑/横切域单独建文件(浅描进 index)。
-- 不替代 spec/design 生成;不修改 `docs/spec/`。
+- 不修改目标仓源码。

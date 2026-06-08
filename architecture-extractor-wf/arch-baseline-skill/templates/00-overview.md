@@ -43,7 +43,7 @@ human_confirmation: { required: {{bool}}, granted: {{bool}}, note: "{{...}}" }
 | `00-overview.md` | 总览（本文件） | — |
 | `01-architecture.md` | **薄导航**：业务域 + 分层 + 主线 + 噪声剔除 | ✅ |
 | `02-business-flows.md` | **薄索引**：主线流程 + 入口锚点 + 活查询命令 | ✅ |
-| `05-retrieval-guide.md` | 活查询指南 + spec_wf 对接 | — |
+| `05-retrieval-guide.md` | 活查询指南 + 下游对接 | — |
 
 > 人审只覆盖标 ✅ 的薄层。明细走活查询，不入人审。
 
