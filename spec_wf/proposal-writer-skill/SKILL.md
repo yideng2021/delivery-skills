@@ -63,6 +63,20 @@ description: >
 - **CG 闸门协议**:[`../shared/protocols/clarification-gate-protocol.md`](../shared/protocols/clarification-gate-protocol.md)(生成前澄清)
 - 机械校验:`node ../scripts/validate.mjs docs/spec/{change_name}/`
 
-## 棕地按需嵌入(可选,P2)
+## §0 既有资产盘点的双源工具补全(可选,P2)
+
+> §0.1 / §0.2 初稿后,若不确定是否**遗漏了既有资产**,可用双源工具**自动补全**来提升完整性与准确性。
+> **流程**:用户初稿(凭经验/文档) → 工具自动补全(CodeGraph/GitNexus) → 人工过滤(删技术相关项,保业务相关项)。
+>
+> **§0.1 补全**(GitNexus):依赖能力自动发现 → 查 capability 间的 DEPENDS_ON 关系
+> **§0.2 补全**(CodeGraph):调用方&影响面自动发现 → 查 callers / impact 
+> **§0.3 补全**(CodeGraph+GitNexus):历史决策&约束识别 → 查 git log / api_impact / shape_check
+>
+> **详见** [`./references/existing-landscape.md`](./references/existing-landscape.md) **§8 工具辅助补全指南**(含三层操作、自检清单、过滤原则、反模式)。
+> **原则**:工具找\"结构相关\",人工过滤\"业务相关\"。工具补全**不强制**,但 `change_mode != greenfield` 时**强烈建议**用工具验证完整性。
+
+---
+
+## 棕地影响分析(可选,P2)
 
 > 若 §0 盘点中发现「与既有功能的**业务冲突**」或需「**重构 / 替换既有能力**」,建议调用 [`brownfield-impact-analyzer`](../brownfield-impact-analyzer-skill/SKILL.md) 产出咨询件 `impact.md`;其 §2 冲突点 / §3 影响面 / §4 侵入建议可作为本 proposal §0.3 「既有约束与历史决策」与 §2 「关联既有资产 / Blast Radius」的**素材引用**(被动引用,不强耦合)。`impact.md` **不进** 主 schema 校验,**不修改** 本 proposal 正文与 frontmatter。
