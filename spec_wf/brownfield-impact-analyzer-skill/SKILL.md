@@ -2,7 +2,7 @@
 name: brownfield-impact-analyzer
 description: >
   棕地领域的影响分析器(critic 范式),按需被 proposal-writer / spec-writer / design-writer
-  嵌入调用,或由用户独立调用。给定「改动意图 + 代码库」,产出咨询件 `impact.md`:改动意图
+  嵌入调用,或由用户独立调用。给定「改动意图 + CodeGraph/GitNexus 双源索引」,产出咨询件 `impact.md`:改动意图
   + 冲突点 + 影响面 + 侵入/接缝建议 + 低耦合/低影响设计规则。**纯诊断器**:只给事实与
   通用设计原则,不给具体落地方案、不做回滚/测试/路由决策。**不进主 schema 校验**(同
   critic.md);**不修改 writer 正文**;**不抢编排权**。当 proposal §0 发现业务冲突 / 重构、
@@ -43,8 +43,25 @@ description: >
 | 来源 | 用途 |
 |------|------|
 | 用户改动意图(自然语言) | 锚定分析范围 |
-| 代码仓库 | 接缝勘察 / 冲突检索 / 影响评估 |
+| **CodeGraph 索引**(MCP) | 静态调用/依赖结构影响面:反链、调用方、blast radius、端到端调用链 |
+| **GitNexus 索引**(MCP) | 语义域归属 / 对外契约一致性 / 当前改动 diff 影响 |
 | (可选)上游 proposal §0 / spec `impacted_modules` / design `reused_modules` | 复用既有盘点,不重复扫描 |
+
+> 双源须就绪(`codegraph_status` / `list_repos` 可达)。任一缺失则降级为单源,并在 §3 显式注明"置信度下降(缺 X 源)"。
+
+## 分析方法:CodeGraph + GitNexus 双源融合
+
+两源**都是结构态**,互补在"调用链 vs 业务域/契约"(非"静态 vs 历史"):
+
+| 源 | 职责 | 主用工具 |
+|----|------|----------|
+| **CodeGraph** | 结构性影响面:谁调受改符号、改它波及谁、端到端调用链(含动态分发) | `codegraph_impact` / `codegraph_callers` / `codegraph_callees` / `codegraph_explore` |
+| **GitNexus** | 语义/契约影响:受改符号属哪个业务域、对外接口契约是否破坏、当前改动 diff 波及面 | `gitnexus impact` / `api_impact` / `shape_check` / `detect_changes` / `cypher` |
+
+**融合判据**:
+- §3 影响范围 = CodeGraph 反链调用方清单 ∪ GitNexus 业务域波及;
+- §2 接口变更冲突 = `shape_check`/`api_impact` 检出契约破坏(同时升 §3 风险为高);
+- 在途/未合并:工作树改动用 `detect_changes`,跨分支开放 PR 仍走 git(双源不做历史共变挖掘)。
 
 ## 输出:`impact.md`(5 节,≤1 页)
 

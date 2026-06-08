@@ -17,13 +17,14 @@
 
 > 三类外的"冲突"不属于本 skill 范畴(如:UI 视觉冲突、性能 SLO 抢占等),按需在 §3 影响面记录或交由其它 skill。
 
-### §1.2 检索清单(AI 自查,顺序固定)
+### §1.2 检索清单(AI 自查,顺序固定;双源融合)
 
 1. `proposal/spec/design/tasks` 文档历史:同 `change_name`/`touched_capabilities`/`impacted_modules` 的近 N 个 change
-2. CODEOWNERS / git log:改动文件的所有权与近 30 天提交者集
-3. 在途 PR / branch:相同路径或符号名的开放 PR
-4. 既有 ADR / change-verbs 注记:`[已有·扩展]` / `[已有·修改]` / `[已有·废弃]` 的历史结论
-5. 调用方反链:静态搜索受改符号的所有引用点
+2. CODEOWNERS / git log:改动文件的所有权与近 30 天提交者集;开放 PR/branch 同路径(工作树改动用 `gitnexus detect_changes`,跨分支 PR 走 git)
+3. **调用方反链(CodeGraph)**:`codegraph_callers` / `codegraph_impact` 列出受改符号的所有引用点与波及面(含动态分发,优于裸搜索)
+4. **语义域归属(GitNexus)**:`cypher MEMBER_OF` / `gitnexus context` 看受改符号属哪个业务域、被哪些流程引用
+5. **契约一致性(GitNexus)**:`shape_check` / `api_impact` 检既有对外接口 / 跨服务契约是否被破坏
+6. 既有 ADR / change-verbs 注记:`[已有·扩展]` / `[已有·修改]` / `[已有·废弃]` 的历史结论
 
 > 检索过程不必在 §2 表中复述;**未发现冲突**时,§2 下方一行写明已检索的范围即可(诚实性兜底)。
 
@@ -49,13 +50,15 @@
 
 ### §2.1 五维评估(闭集)
 
-| 维度 | 评估问 | 典型证据 |
+| 维度 | 评估问 | 典型证据(双源) |
 |------|--------|---------|
-| **接口契约** | public API / RPC / 事件 schema 是否变化? | OpenAPI / proto / event-bus schema diff |
-| **数据语义** | 数据库字段 / 缓存键 / 消息载荷的含义是否变化? | 字段含义变;枚举扩展;时区/单位变更 |
-| **调用方** | 谁在调?上下游服务 / 前端页面 / 离线任务 / 其它团队? | 反链结果 + CODEOWNERS |
+| **接口契约** | public API / RPC / 事件 schema 是否变化? | GitNexus `shape_check` / `api_impact` 契约 diff |
+| **数据语义** | 数据库字段 / 缓存键 / 消息载荷的含义是否变化? | 字段含义变;枚举扩展;时区/单位变更(`codegraph_explore` 取实体源码核对) |
+| **调用方** | 谁在调?上下游服务 / 前端页面 / 离线任务 / 其它团队? | CodeGraph `codegraph_callers`/`codegraph_impact` 反链 + GitNexus 业务域归属 + CODEOWNERS |
 | **配置 / 开关** | 配置项 / feature flag / 环境变量 / RBAC 策略是否变? | config 文件 diff;新增 flag |
 | **运行时 / 部署** | 部署单元 / 资源依赖 / 启动顺序是否变? | 新增依赖 / 容器变更 / 启动钩子 |
+
+> 证据优先级:**结构性影响走 CodeGraph(反链/blast radius),语义域与契约走 GitNexus**;两源交叉一致的结论置信度最高。
 
 > 维度按需选填,**至少 1 行非「无影响」**;全为「无影响」时显式写明(诚实性兜底)。
 
