@@ -37,6 +37,10 @@
 
 **与 spec L0.x 的边界**：spec L0.x 写"既有业务上下文/Bounded Context"是**业务视角**（用户、流程、合规）；design §2.1 BC 关系列是**架构视角**（边界、契约、防腐）。如果发现两者描述完全雷同，说明 spec 误把架构语言塞进了 L0.x，必须回 spec-writer 修订。
 
+> **棕地认知基线辅助复用自检**（若可用）：目标仓存在 `.brownfield/` 时，§5 ADR 复用三问可据其取证——
+> "已检索既有资产" → 读 `01-architecture.md` 业务域 + `gitnexus context`/`cypher MEMBER_OF` 看责任归属；
+> "为何新建而非扩展" → 用 `codegraph_impact` 量化扩展既有模块的影响面 vs 新建成本。用法见 `.brownfield/05-retrieval-guide.md` §2.2。
+
 ---
 
 ### §2.2 D2 — 既有模块 / 服务 / 接口
