@@ -1,0 +1,25 @@
+flow 采购需求提交 {
+  @base http://localhost:8080
+  @source flows/采购需求提交/events.json
+  @capturedAt 2026-06-09T10:22:00Z
+
+  [登录页] @route=#/login @component=?(grep 待定)
+    输入用户名 → 输入密码 → 点击登录
+    → POST /api/auth/login
+      req  {username:str, password:str}
+      resp {token:str, user:{id:int, name:str, role:str}}     ~real: role="buyer"
+
+  [需求列表] 进入需求列表
+    → GET /api/requirements?page=1&size=20
+      resp {total:int, list:[{id:int, title:str, status:enum(draft|submitted)}]}
+
+  [新建需求] 打开新建表单 → 填写标题 → 提交需求
+    → GET /api/categories
+      resp [{code:str, name:str}]                              ~real: 9 项
+    → POST /api/requirements
+      req  {title:str, category:str, items:[{name:str, qty:int}]}  ~inferred: items 单样本
+      resp {id:int, status="draft"}
+
+  [需求列表] (自动刷新)
+    → GET /api/requirements?page=1&size=20   (同上, 复用契约)
+}

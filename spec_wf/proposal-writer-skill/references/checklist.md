@@ -22,6 +22,7 @@
 - [ ] **`change_mode != greenfield` 分支**:§0.1 / §0.2 / §0.3 三张表字段位**必存**;§0.1 / §0.2 至少各 1 行非"无";数据来自实地检索(代码 grep / 账本扫描 / Wiki 回顾),**非凭印象**
 - [ ] `change_mode != greenfield` 时,§0.1 "关系"列 ⊆ {沿用, 扩展, 修改, 废弃, 替换, 并存, 无}(语义见 [change-verbs.md](../../shared/contracts/change-verbs.md))
 - [ ] `change_mode != greenfield` 时,§0.2 "触达方式"列 ⊆ {读, 写, 改, 替换, 仅引用, 无}
+- [ ] **工具辅助(规则 R)**:`change_mode != greenfield` 且双索引就绪时,§0.2 取证列 ≥1 行为 `codegraph`/`gitnexus`;否则 §0.2 已标 `tool_assist: skipped/unavailable + 原因`(见 [existing-landscape.md](./existing-landscape.md) §8)
 
 ## §3 内容合规
 

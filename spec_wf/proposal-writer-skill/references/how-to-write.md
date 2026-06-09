@@ -46,6 +46,8 @@
 
 数据获取纪律:**禁止凭印象填写**,必须基于代码搜索 / 账本扫描 / Wiki 回顾 / 历史 Proposal 回顾,四步至少完成两步。
 
+**§0.2 工具辅助(规则 R)**:`change_mode != greenfield` 且双索引就绪时,§0.2 **默认**走 [`./existing-landscape.md`](./existing-landscape.md) §8 四步协作流(种子→扩展→补网→过滤),并在取证列标来源;不可用/主动跳过在 §0.2 顶部标 `tool_assist: unavailable | skipped — <原因>`。本次是否启用**在 CG 闸门时决定**,并把 `tool_assist:` 行写入 `<!-- clarification-gate -->` 留痕块。§0.1/§0.3 不适用双源工具。
+
 详见 [`./existing-landscape.md`](./existing-landscape.md)。
 
 ### §3.1 Problem Statement (Why)

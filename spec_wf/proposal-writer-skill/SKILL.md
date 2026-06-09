@@ -63,8 +63,8 @@ description: >
 - **CG 闸门协议**:[`../shared/protocols/clarification-gate-protocol.md`](../shared/protocols/clarification-gate-protocol.md)(生成前澄清)
 - 机械校验:`node ../scripts/validate.mjs docs/spec/{change_name}/`
 
-## §0 工具辅助(可选,P2)
+## §0 工具辅助(§0.2 默认启用,可声明跳过)
 
-> **§0.2 完整性补全**:§0.2(代码资产)手工 grep 初稿后,可用 CodeGraph 查漏间接触达(`codegraph_callers` / `codegraph_impact` / `codegraph_explore`),再人工过滤技术杂质。**仅适用 §0.2**——§0.1(规约/账本资产)、§0.3(历史决策/黑知识)不在代码图谱,双源工具**不适用**。详见 [`./references/existing-landscape.md`](./references/existing-landscape.md) §8。
+> **§0.2 完整性补全(规则 R)**:`change_mode != greenfield` **且双索引就绪**时,§0.2 **默认执行** [`./references/existing-landscape.md`](./references/existing-landscape.md) §8 四步协作流(种子→扩展→补网→过滤),取证列标来源。双索引**不可用** → §0.2 顶部标 `tool_assist: unavailable` + 手工补偿;**主动跳过** → 标 `tool_assist: skipped — <原因>`。**仅适用 §0.2**——§0.1(规约/账本资产)、§0.3(历史决策/黑知识)不在代码图谱、`greenfield` 无既有资产,均**不适用**。
 >
 > **棕地影响分析**:若 §0 盘点发现「与既有功能的**业务冲突**」或需「**重构 / 替换既有能力**」,可调用 [`brownfield-impact-analyzer`](../brownfield-impact-analyzer-skill/SKILL.md) 产出 `impact.md`;其 §2 冲突点 / §3 影响面 / §4 侵入建议作为本 proposal §0.3 与 §2「关联既有资产 / Blast Radius」的**素材引用**(被动,不进主 schema,不改正文)。

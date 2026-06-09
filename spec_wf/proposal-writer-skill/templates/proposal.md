@@ -40,10 +40,11 @@ related_req_proposal: []
 ### 0.2 相关既有代码资产
 
 > 仅列与本次变更**直接相关**的模块 / 服务 / 接口；触达方式闭集见 [`./references/existing-landscape.md`](./references/existing-landscape.md) §3.2。
+> **工具辅助（规则 R，见 [`existing-landscape.md`](./references/existing-landscape.md) §8）**：`change_mode != greenfield` 且双索引就绪时默认执行，取证列标来源；不可用/跳过在下方标 `tool_assist: unavailable | skipped — <原因>`。
 
-| 模块 / 服务 / 接口 | 路径 | 触达方式 |
-|-------------------|------|----------|
-| `{module / service / api}` | `{relative/path}` | 读 / 写 / 改 / 替换 / 仅引用 |
+| 模块 / 服务 / 接口 | 路径 | 触达方式 | 取证（手工/codegraph/gitnexus） |
+|-------------------|------|----------|------|
+| `{module / service / api}` | `{relative/path}` | 读 / 写 / 改 / 替换 / 仅引用 | `{手工 / codegraph / gitnexus}` |
 
 ### 0.3 既有约束与历史决策回顾
 

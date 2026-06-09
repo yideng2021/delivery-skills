@@ -24,6 +24,7 @@
 - ❌ `change_mode != greenfield` 时省略 §0 三张表的字段位(必须保留;greenfield 时**允许**整节折叠为一行声明,详见模板 §0 顶部规则)
 - ❌ §1 Problem Statement **不引用 §0** 任何条目(违反 I5)
 - ❌ §2 表中「关联既有资产」列**留空**(违反 I5;纯新增请显式写 `—`)
+- ❌ `change_mode != greenfield` **且双索引可用**时,§0.2 仅手工完成、未执行 §8 工具辅助、又未声明 `tool_assist: skipped/unavailable` → 盘点不充分(索引不可用时豁免)
 
 ## §4 工程闭环类
 

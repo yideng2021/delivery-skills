@@ -16,7 +16,7 @@
 | 子节 | 职责 | 数据来源 |
 |------|------|---------|
 | §0.1 相关既有能力与文档 | 业务级 / 规约级既有资产 | 既有 spec / Capability / REQ-ID / AUTH-ID / ADR / 历史 Proposal |
-| §0.2 相关既有代码资产 | 工程级既有资产 | 代码搜索（grep/ 索引）找到的模块 / 服务 / 接口 |
+| §0.2 相关既有代码资产 | 工程级既有资产 | grep/find（种子发现 + **非代码资产**：SQL 表 / config / MQ topic）＋ CodeGraph/GitNexus（从种子**顺调用链精确扩展**、查漏间接触达、业务域归属）。协作流见 §8 |
 | §0.3 既有约束与历史决策回顾 | 软性背景 | 历史决策、技术债、已知冲突 |
 
 **禁止**：把 §0.2 写成 §0.1 的复述（业务能力 ≠ 代码模块）；把 §0.3 写成 §0.1 / §0.2 的总结。
@@ -61,11 +61,13 @@
 
 ### §3.1 表格形态
 
-| 模块 / 服务 / 接口 | 路径 | 触达方式 |
-|-------------------|------|----------|
-| `user-service` | `services/user-service/` | 改 |
-| `POST /api/auth/login` | `services/user-service/internal/auth/login.go` | 替换 |
-| `users` 表（mysql） | `migrations/0007_create_users.sql` | 仅引用 |
+| 模块 / 服务 / 接口 | 路径 | 触达方式 | 取证 |
+|-------------------|------|----------|------|
+| `user-service` | `services/user-service/` | 改 | codegraph |
+| `POST /api/auth/login` | `services/user-service/internal/auth/login.go` | 替换 | codegraph |
+| `users` 表（mysql） | `migrations/0007_create_users.sql` | 仅引用 | 手工 |
+
+> **取证**列 ∈ {`手工`, `codegraph`, `gitnexus`}：标该行资产的发现/验证来源。非 greenfield 且索引就绪时，本表 ≥1 行应为 `codegraph`/`gitnexus`（见 §8 规则 R）。
 
 ### §3.2 \"触达方式\"闭集
 
@@ -135,17 +137,35 @@
 
 ---
 
-## §8 §0.2 代码资产的工具辅助补全（CodeGraph + GitNexus，可选）
+## §8 §0.2 代码资产的工具辅助补全（grep/find + CodeGraph + GitNexus，默认启用）
 
-§0.2（代码资产）手工 grep 初稿后，可用 CodeGraph/GitNexus 校验**完整性**——查漏手工易漏的间接触达。流程：手工初稿 → 工具查漏 → 人工过滤。
+> **何时执行（规则 R）**：`change_mode != greenfield` **且双索引就绪** → 默认执行下面四步；双索引**不可用** → §0.2 标 `tool_assist: unavailable` + 手工补偿（不算违例）；**主动跳过** → 标 `tool_assist: skipped — <原因>`；`greenfield` 不适用。
+
+§0.2（代码资产）的盘点，**grep/find 与 CodeGraph/GitNexus 不是替代、是互补盖盲区**：
+
+- grep/find 的盲区（跟不动调用链、动态分发、同名假阳性）→ **CodeGraph 补**
+- CodeGraph/GitNexus 的盲区（看不见 SQL 表 / config / MQ topic / 未解析文本）→ **grep/find 补**
+
+> 铁证：§0.2 资产含「数据表」（如 `migrations/0007_create_users.sql`），CodeGraph 通常不索引 SQL migration——**找数据表只能靠 grep/find**。所以 grep 在 §0.2 不可替代。
+
+**协作流（4 步：种子 → 扩展 → 补网 → 过滤）**：
+
+```
+① 种子发现   grep 关键词(capability/feature 名)定位候选入口；GitNexus context/community 定位业务域 → 种子符号 + 候选非代码资产
+② 顺藤扩展   CodeGraph 从种子精确扩展(见 §8.1)，补 grep 漏的间接触达、去同名假阳性
+③ 非代码补网 grep/find 补 CodeGraph 看不见的：数据表(SQL migration)、config 键、MQ topic、注解/yaml 路由、字符串字面量
+④ 过滤确认   人工过滤技术杂质(见 §8.2) + codegraph_explore verbatim 确认活跃/废弃
+```
+
+> 心智：**grep 撒网，CodeGraph 顺藤，GitNexus 归域，最后 grep 回头补非代码资产，人收口。**
 
 > **适用边界**：本节只服务 **§0.2**。§0.1（业务能力/规约资产）在 spec 账本与 ADR 里、不在代码图谱；§0.3（历史决策/技术债）是 ADR 加人的黑知识——二者**双源工具不适用**，维持账本检索 + grep-over-docs + 人工判断。
 
-### §8.1 查漏间接触达（CodeGraph）
+### §8.1 顺藤扩展：查漏间接触达（CodeGraph）
 
-手工 grep 易漏「间接触达」（A→B→C，搜 C 不知道 B）。对 §0.2 已列入口符号：
+手工 grep 易漏「间接触达」（A→B→C，搜 C 不知道 B），且有同名假阳性。对 §0.2 已列入口符号（种子）：
 
-- 用 `codegraph_callers` / `codegraph_impact` 查调用方与受波及模块，补齐漏列项；
+- 用 `codegraph_callers` / `codegraph_impact` 查调用方与受波及模块，补齐漏列项、剔除同名假阳性；
 - 用 `codegraph_explore` 取关键接口源码，剔除已 `@Deprecated` / 死代码的误列项。
 
 > 写**能力名 + 意图**即可（如「对 PurchaseService 查调用方」），精确调用签名交给持 MCP schema 的 agent，不在本指南写死。
@@ -163,14 +183,15 @@
 - [ ] 每个入口符号的**直接调用方**都列了吗？（`codegraph_callers` 验证）
 - [ ] 有**间接被波及**的模块漏列吗？（`codegraph_impact`）
 - [ ] 有**已废弃**的模块误列吗？（`codegraph_explore` 查 `@Deprecated`）
+- [ ] **非代码资产**（数据表/config/MQ topic）grep/find 补网了吗？（CodeGraph 看不见，见 §8 第 ③ 步）
 
-### §8.4 何时用
+### §8.4 何时用（规则 R）
 
-| 情景 | 用工具 |
+| 情景 | 动作 |
 |---|---|
-| `change_mode == greenfield` | ❌ 无既有资产 |
-| `change_mode != greenfield`，§0.2 初稿已查过代码、较有把握 | ⚠️ 可选，只过自检 |
-| `change_mode != greenfield`，§0.2 初稿不确定是否遗漏 | ✅ 强烈建议（手工 grep 遗漏间接触达概率高）|
+| `greenfield` | 不适用（无既有资产）|
+| 非 greenfield + 双索引就绪 | ✅ **默认执行**四步；主动跳过须标 `tool_assist: skipped — <原因>` |
+| 非 greenfield + 双索引不可用 | 标 `tool_assist: unavailable` + 手工补偿清单 |
 
 ---
 
