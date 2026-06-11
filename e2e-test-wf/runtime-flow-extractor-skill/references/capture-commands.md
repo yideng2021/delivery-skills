@@ -1,89 +1,90 @@
-# 命令速查：codegen / 回放 / trace
+# 命令速查：环境检查 / 录制(codegen --save-har) / 解析(parse_har.py)
 
-> 官方 Playwright CLI（`npx playwright`），非 e2e-testing-skill 里的逐步 `playwright-cli`。
+> 官方 Playwright CLI（`npx playwright`）+ Python 解析脚本。record-only：录制即抓包，**不回放**。
+> 标准目录前缀 `{前缀}` = `{工程根}/docs/business-processes/{业务域}/runtime-flows/`。
 
 ## 0. 环境检查（只检查，严禁随意安装）
 
-> 本步**仅做环境检查**。任何缺失项一律**停下并提示用户自行处理**，
-> 绝不擅自 `npm i` / `playwright install` 或改动用户环境。
-
-逐项检查，全部 ✅ 才进入第 1 步：
+> 本步**仅做环境检查**。任何缺失项一律**停下并提示用户自行处理**，绝不擅自 `npm i` / `playwright install`。
 
 ```bash
-# ① Node 是否可用（建议 >= 18）
+# ① Node（建议 >= 18）
 node -v
-
-# ② @playwright/test 是否已安装
-npm ls @playwright/test
-
-# ③ chromium 浏览器内核是否已下载（直接查文件，不调 install）
-#    Linux/macOS:
-ls -la ~/.cache/ms-playwright/chromium-*/ > /dev/null 2>&1 && echo "✅ chromium 就绪" || echo "❌ chromium 缺失"
+# ② @playwright/test
+npm ls @playwright/test    # 失败可试 npx playwright --version
+# ③ chromium 内核（直接查文件，不调 install）
 #    Windows:
-if exist "%USERPROFILE%\AppData\Local\ms-playwright\chromium-*" (echo ✅ chromium 就绪) else (echo ❌ chromium 缺失)
+if exist "%USERPROFILE%\AppData\Local\ms-playwright\chromium-*" (echo OK chromium) else (echo MISSING chromium)
+#    Linux/macOS:
+ls ~/.cache/ms-playwright/chromium-*/ >/dev/null 2>&1 && echo "OK chromium" || echo "MISSING chromium"
+# ④ Python 3（跑解析脚本）
+python --version
 ```
-
-检查结果裁决：
 
 | 现象 | 处置 |
 |------|------|
-| `node -v` 报错 / 版本过低 | **停止**，提示用户安装/升级 Node 后重来 |
-| `@playwright/test` 未安装 | **停止**，提示用户在项目中执行 `npm i -D @playwright/test`（由用户决定，不代为执行） |
-| chromium 缺失 | **停止**，提示用户执行 `npx playwright install chromium`（由用户决定，不代为执行） |
+| `node -v` 报错/版本过低 | **停止**，提示用户安装/升级 Node |
+| `@playwright/test` 未安装 | **停止**，提示用户执行 `npm i -D @playwright/test`（用户自行执行） |
+| chromium 缺失 | **停止**，提示用户执行 `npx playwright install chromium`（用户自行执行） |
+| Python 缺失 | **停止**，提示用户安装 Python 3 |
 | 全部就绪 | 进入第 1 步 |
 
-> 红线：缺什么**告知用户对应命令并由用户自行执行**，本 skill 不主动安装任何依赖或浏览器。
+## 1. 录制（一条完整业务闭环，录制即抓包）
 
-## 1. 录制（人走一遍真实业务流）
-
-```bash
-# 打开目标站点开始录制；操作完成后关闭浏览器，脚本自动生成
-npx playwright codegen http://localhost:8080 -o flows/<flow-name>/raw.spec.ts
-
-# 指定语言（默认 TS）/ 复用已登录态
-npx playwright codegen --target playwright-test http://localhost:8080
-npx playwright codegen --load-storage=auth.json http://localhost:8080   # 跳过登录
-npx playwright codegen --save-storage=auth.json http://localhost:8080   # 录登录态备用
-```
-
-> 录制要点：走**完整、真实**的一条业务主线；尽量覆盖关键提交/查询；避免无关点击。
-
-## 2. 插桩
-
-把 `raw.spec.ts` 转写为 `runner.spec.ts`（规则见 [attribution-strategy.md](attribution-strategy.md)）。
-把 `templates/capture.ts` 与 `templates/playwright.config.ts` 复制到流程目录。
-
-## 3. 回放抓取
+> 录前先与用户**确定业务闭环边界**（不变量 1），并**侦察 API 路径前缀**确认 glob（见下）。
 
 ```bash
-# 在流程目录下运行；产出 events.json + network.har + trace（test-results/）
-npx playwright test runner.spec.ts --config=playwright.config.ts
-
-# 有头观察 / 调试
-npx playwright test runner.spec.ts --headed
-npx playwright test runner.spec.ts --debug
+npx playwright codegen <URL> \
+  -o   {前缀}/{name}_playwright_records.ts \
+  --save-har={前缀}/{name}_runtimeflow_api_requests.har \
+  --save-har-glob='**/api/**'
 ```
 
-产物：
-- `events.json` —— capture.ts 落盘，**图文同源唯一事实来源**
-- `network.har` —— 全量流量备份（body 内嵌）
-- `test-results/**/trace.zip` —— 视觉审计兜底
+| 参数 | 说明 |
+|------|------|
+| `-o` | 录制脚本（真实操作序列）。`{name}` = 业务闭环名，如 `requirement-plan-filing` |
+| `--save-har` | 录制阶段把所有匹配请求（含 req/resp body）归档到 HAR |
+| `--save-har-glob` | glob 过滤；`**/api/**` 只留 url 含 `/api/` 的请求 |
 
-## 4. 复盘 / 核对
+可选：复用登录态，避免每次重登。
+```bash
+npx playwright codegen --save-storage=auth.json <URL>   # 先录一次登录态
+npx playwright codegen --load-storage=auth.json <URL>   # 后续复用
+```
+
+> 录制要点：走**完整真实的一条闭环**（如 列表→新增→详情→删除），覆盖关键提交/查询，避免无关点击。
+> **无回放兜底，录什么 = 分析什么**，录歪了只能重录。
+
+### ⚠️ glob 侦察（静默丢请求的坑）
+
+`--save-har-glob='**/api/**'` 只抓 `/api/` 下的请求。若目标接口走**网关前缀**（`/gateway/`、`/gw/`）、
+**微服务前缀**、`/graphql`、BFF 等，会被**静默丢弃**。录前先开浏览器 DevTools Network 看几条真实请求，
+确认前缀后再定 glob（如 `**/{api,gateway}/**` 或更宽 `**/*` 然后在解析阶段过滤）。
+
+## 2. 解析 HAR → 两段式接口 TXT
 
 ```bash
-# 打开 trace viewer：逐步回看截图、DOM、network、console
-npx playwright show-trace test-results/<...>/trace.zip
-
-# 用浏览器打开 HAR（或 VS Code HAR 插件）核对接口 body
+python scripts/parse_har.py {前缀}/{name}_runtimeflow_api_requests.har
+# 仅出摘要不出明细 / 调整明细截断阈值：
+python scripts/parse_har.py <har> --summary-only
+python scripts/parse_har.py <har> --max-detail-len 4000
 ```
 
-## 5. 常见问题
+产出（与 HAR 同目录）：
+
+| 文件 | 内容 | 加载策略 |
+|------|------|----------|
+| `{name}_runtimeflow_api_requests.txt` | **摘要**：接口种子（去重）+ 时序清单（`idx. [status] METHOD path`） | **默认加载** |
+| `{name}_runtimeflow_api_details.txt` | **明细**：每条 req/resp body（脱敏+截断），按序号对齐摘要 | **按需加载** |
+
+> 解析时已对敏感 header/body 字段脱敏（见 [redaction-rules.md](redaction-rules.md)）；HAR 含完整明文，**不入库**。
+
+## 3. 常见问题
 
 | 现象 | 处理 |
 |------|------|
-| events.json 里接口缺 body | 该响应非 JSON 或已被消费 → 查 network.har 原始 body |
-| `step: -1` 桶有接口 | 首个 `cap.step()` 太晚 → 在 goto 前补一步 |
-| 接口太多噪声 | 收紧 `apiPattern`（如 `/\/api\/v1\//`）过滤埋点/静态资源 |
-| 登录态每次失效 | 用 `--save-storage` 录一次登录态，回放 `contextOptions.storageState` 复用 |
-| networkidle 超时 | 长轮询/SSE 页面改用 `waitForResponse(/path/)` 精确等待 |
+| TXT 里 0 条 /api/ 请求 | glob 没匹配到真实前缀 → 重录，调 `--save-har-glob`（见 §1 侦察） |
+| 明细 body 被截断 | 调 `--max-detail-len`，或直接查 HAR 原文 |
+| 接口太多、含埋点噪声 | 录制时收紧 glob，或解析后人工剔除非业务接口 |
+| 登录态每次失效 | `--save-storage` 录一次，`--load-storage` 复用 |
+| 缺响应 body | 部分响应非 JSON / 未被记录 → 查 HAR `content`；属正常 |

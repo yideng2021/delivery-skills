@@ -1,25 +1,31 @@
-flow 采购需求提交 {
-  @base http://localhost:8080
-  @source flows/采购需求提交/events.json
+flow 需求计划填报 {
+  @base http://10.0.0.5:8080
+  @source requirement-plan-filing_runtimeflow_api_requests.txt + requirement-plan-filing_playwright_records.ts
   @capturedAt 2026-06-09T10:22:00Z
 
-  [登录页] @route=#/login @component=?(grep 待定)
-    输入用户名 → 输入密码 → 点击登录
-    → POST /api/auth/login
-      req  {username:str, password:str}
-      resp {token:str, user:{id:int, name:str, role:str}}     ~real: role="buyer"
+  # 一条完整业务闭环：列表查询 → 新增 → 详情 → 删除
 
-  [需求列表] 进入需求列表
-    → GET /api/requirements?page=1&size=20
-      resp {total:int, list:[{id:int, title:str, status:enum(draft|submitted)}]}
+  [计划列表] @route=#/req/plan/list @component=src/views/req/plan/PlanList.vue
+    打开列表 → 查询
+    → GET /api/requirement/plan/list?page=1&size=20   @backend=PlanController.list → PlanService.page
+      resp {total:int, list:[{id:int, name:str, status:enum(draft|submitted)}]}   ~real: total=12
 
-  [新建需求] 打开新建表单 → 填写标题 → 提交需求
-    → GET /api/categories
-      resp [{code:str, name:str}]                              ~real: 9 项
-    → POST /api/requirements
-      req  {title:str, category:str, items:[{name:str, qty:int}]}  ~inferred: items 单样本
+  [计划新增] @route=#/req/plan/new @component=src/views/req/plan/PlanForm.vue
+    点击新增 → 填写名称 → 选择费用来源 → 提交
+    → GET /api/budget/source/list                     @backend=BudgetController.sources
+      resp [{code:str, name:str}]                      ~real: 9 项
+    → POST /api/requirement/plan/save                 @backend=PlanController.save → PlanService.create
+      req  {name:str, budgetSource:str, items:[{name:str, qty:int}]}   ~inferred: items 单样本
       resp {id:int, status="draft"}
 
-  [需求列表] (自动刷新)
-    → GET /api/requirements?page=1&size=20   (同上, 复用契约)
+  [计划详情] @route=#/req/plan/detail/:id @component=src/views/req/plan/PlanDetail.vue
+    点击行 → 查看详情
+    → GET /api/requirement/plan/detail?id=123         @backend=PlanController.detail
+      resp {id:int, name:str, items:[...], status:str}
+
+  [计划列表] (返回并删除)
+    点击删除 → 确认
+    → DELETE /api/requirement/plan/123                @backend=PlanController.remove → PlanService.delete
+      resp {success:bool}                              ~real: success=true
+    → GET /api/requirement/plan/list?page=1&size=20   (同上, 复用契约; 删除后自动刷新)
 }

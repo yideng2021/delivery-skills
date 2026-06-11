@@ -1,17 +1,17 @@
-%% flow-mermaid.mmd — 业务流程图骨架（与 flow.flow 同源于 events.json）
-%% 约定：节点=界面/操作步骤；边上标注触发的接口；接口明细在 flow.flow 展开。
-%% 节点 id 用步骤序号，便于与 events.json steps[].index 对齐。
+%% {name}.mmd — 业务闭环流程图（与 {name}.flow 同源）
+%% 同源：接口取自 *_api_requests.txt，步骤取自 {name}_playwright_records.ts，代码锚取自落锚。
+%% 约定：节点=界面/子过程；边上标注触发的接口；接口/参数明细在 {name}.flow 展开。
 
 flowchart TD
-    s0["登录页<br/>输入账号密码 → 登录"]
-    s1["需求列表<br/>加载列表"]
-    s2["新建需求<br/>填表 → 提交"]
-    s3["需求列表<br/>自动刷新"]
+    s0["计划列表<br/>查询"]
+    s1["计划新增<br/>填表 → 提交"]
+    s2["计划详情<br/>查看"]
+    s3["计划列表<br/>删除 → 刷新"]
 
-    s0 -->|"POST /api/auth/login"| s1
-    s1 -->|"GET /api/requirements"| s2
-    s2 -->|"GET /api/categories<br/>POST /api/requirements"| s3
-    s3 -->|"GET /api/requirements"| s3
+    s0 -->|"GET /api/requirement/plan/list"| s1
+    s1 -->|"GET /api/budget/source/list<br/>POST /api/requirement/plan/save"| s2
+    s2 -->|"GET /api/requirement/plan/detail"| s3
+    s3 -->|"DELETE /api/requirement/plan/:id<br/>GET .../list（刷新）"| s3
 
-    classDef api fill:#eef,stroke:#88a;
-    class s0,s1,s2,s3 api;
+    classDef screen fill:#eef,stroke:#88a;
+    class s0,s1,s2,s3 screen;
