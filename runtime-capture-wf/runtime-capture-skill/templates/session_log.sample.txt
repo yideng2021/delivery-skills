@@ -1,0 +1,21 @@
+# 录制会话增强日志
+# 录制起始: 2026-06-11T04:10:00.000Z
+# 录制结束: 2026-06-11T04:18:31.000Z
+# HAR 文件: runtime-flows/requirement-plan-filing_runtimeflow_api_requests.har
+
+# ── 页面导航序列（full=硬导航，spa:hash/push/replace/pop=SPA 路由）──
+[NAV:full]      2026-06-11T04:10:05Z [page0] -> https://cas.example.com/login.html
+[NAV:full]      2026-06-11T04:10:42Z [page1] -> https://req.example.com/workbench/index
+[NAV:spa:push]  2026-06-11T04:11:03Z [page1] -> https://req.example.com/workbench/requirement/plan
+[NAV:spa:push]  2026-06-11T04:13:20Z [page1] -> https://req.example.com/workbench/requirement/plan/detail/123
+[NAV:spa:pop]   2026-06-11T04:15:48Z [page1] -> https://req.example.com/workbench/requirement/plan
+
+# ── API 请求时序（带归属页面 URL，已修正导航竞态）─────────────────
+[REQ] +0.0s   GET  /api/user/info                    (45ms)            @ https://req.example.com/workbench/index                     [page1]
+[REQ] +0.3s   GET  /api/menu/list                    (88ms)            @ https://req.example.com/workbench/index                     [page1]
+[REQ] +7.6s   GET  /api/requirement/plan/list        (238ms)           @ https://req.example.com/workbench/requirement/plan          [page1]
+[REQ] +9.1s   GET  /api/budget/source/list           (1240ms) ⚠️[SLOW] @ https://req.example.com/workbench/requirement/plan          [page1]
+[REQ] +12.3s  POST /api/schemeRequirement/addOrUpdate (312ms)          @ https://req.example.com/workbench/requirement/plan          [page1]
+[REQ] +18.7s  GET  /api/requirement/plan/detail      (156ms)           @ https://req.example.com/workbench/requirement/plan/detail/123 [page1]
+[REQ] +25.4s  DELETE /api/requirement/plan/123       (203ms)           @ https://req.example.com/workbench/requirement/plan          [page1]
+[REQ] +25.9s  GET  /api/requirement/plan/list        (210ms)           @ https://req.example.com/workbench/requirement/plan          [page1]

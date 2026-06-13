@@ -1,0 +1,12 @@
+{
+  "name": "playwright-custom-recorder",
+  "version": "1.0.0",
+  "description": "自定义 Playwright 录制脚本，替代 npx playwright codegen，支持 URL 追踪和请求时序采集",
+  "main": "custom-recorder.js",
+  "scripts": {
+    "record": "node custom-recorder.js"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.44.0"
+  }
+}
