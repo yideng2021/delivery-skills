@@ -33,7 +33,7 @@ description: >
 2. **三证交叉定置信**：界面 + 接口 + 代码三证命中 = 确证；单证命中 → 标 `~inferred`/`?`。
 3. **推断必标注**：状态机、单样本契约、间接触达等推断一律标 `~inferred`，不与事实混淆。
 4. **不越界**：不采集（上游的事）、不生成测试（下游的事），只落锚出图。
-5. **检索遵规范**：落锚口径严格按 [`01-设计过程/04-工程检索/01-search-best-practices.md`](../../04-工程检索/01-search-best-practices.md)。
+5. **检索遵规范**：落锚口径严格按 [`references/search-guide.md`](references/search-guide.md)。
 
 ## 输入
 
@@ -57,9 +57,9 @@ description: >
 - **Checkpoint**：齐全 → 进入 ①；缺上游产物 → 中断提示，不继续。
 
 ### ① 业务节点识别（Nodes）
-读 `{name}_session_log.txt` 的导航序列（`[NAV:*]` = 界面切换点）+ `{name}_playwright_records.ts` 动作语义，
-**按时序切出流程节点**（界面/子过程）。
-- **Checkpoint**：节点清单按时序排好，节点名用业务语义。
+读 `{name}_session_log.txt` 的导航序列 + `{name}_playwright_records.ts` 动作语义，**按时序切出流程节点**（界面/子过程）。
+节点切分信号有两类，**任一触发即切**：`[NAV:*]` 导航事件；或 `[REQ]` 归属 URL 的**域名变化**（跨系统跳转，常无 NAV 事件）。详见 correlation §2。
+- **Checkpoint**：节点清单按时序排好，节点名用业务语义；跨域名跳转已单独成节点（未漏跨系统子流程）。
 
 ### ② 接口归并（Bucketing）
 `session_log` 每条 `[REQ]` 已带 **remapUrls 修正后的归属页面 URL**——直接按归属 URL + 时序把接口落到节点，
@@ -89,7 +89,8 @@ runtime-flow-mapper-skill/
 ├── references/
 │   ├── preflight-check.md      ← 前置闸门（查工作目录上游文件）
 │   ├── correlation-method.md   ← 三证对齐落锚法（核心能力）
-│   └── flow-map-spec.md        ← 精准地图产物规格 + 校验
+│   ├── flow-map-spec.md        ← 精准地图产物规格 + 校验
+│   └── search-guide.md         ← 工程检索指南（落锚专用）
 └── templates/
     └── flow-map.md             ← {name}_flow-map.md 骨架
 ```

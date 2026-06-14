@@ -17,6 +17,7 @@
 - **节点描述**：{1 句业务含义}
 - **关联 API**：
   - `GET /api/xxx/list` — {用途}
+  - `POST /classifymanage/api/xxx` — {用途} `[外部:classifymanage] 本地工程无源码，来源：共享组件/微前端`
 - **前端关联代码**：
   - 路径：`src/views/.../Index.vue`、`src/api/xxx.js`
   - 调用逻辑：{1-2 句，结合本节点上下文}
@@ -44,10 +45,10 @@
 
 ## 四、外部系统调用
 
-| 外部系统 | API 路径 | 用途 |
-|---------|---------|------|
-| {supprisk 供应商风控} | `POST /supprisk/api/...` | {用途} |
-| {infrastructure 基础设施} | `GET /infrastructure/api/attachment/...` | {附件查询} |
+| 外部系统 | API 路径 | 用途 | 前端调用来源 |
+|---------|---------|------|------------|
+| {supprisk 供应商风控} | `POST /supprisk/api/...` | {用途} | 未在本工程找到，疑为共享组件/微前端注入 |
+| {infrastructure 基础设施} | `GET /infrastructure/api/attachment/...` | {附件查询} | 本工程 `src/api/attachment.js` |
 
 ---
 
@@ -73,10 +74,8 @@ flowchart TD
     s1 -->|"GET /xxx/page"| s2
     s2 -->|"POST /xxx/addOrUpdate<br/>POST /xxx/start"| s3
     s3 -->|"GET /xxx/{id}"| s3
-
-    classDef screen fill:#eef,stroke:#88a;
-    class s1,s2,s3 screen;
 ```
+> 流程图**只保留结构**，禁止 `classDef` / `style` / `class` 样式定义。
 
 ---
 

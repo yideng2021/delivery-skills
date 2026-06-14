@@ -17,6 +17,12 @@ MCP配置：
 
 
 
+```
+gitnexus status                  # Show index status for current repo
+gitnexus clean                   # Delete index for current repo
+gitnexus clean --all --force     # Delete all indexes
+```
+
 
 
 ```
