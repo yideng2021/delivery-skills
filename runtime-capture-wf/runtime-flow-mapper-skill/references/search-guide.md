@@ -55,6 +55,19 @@ gitnexus_context({ name: "ServiceImpl", repo: "<仓库名>" })
 
 ---
 
+## 批量落锚策略（多接口时默认，非优化）
+
+面对几十条去重接口，逐条 grep/codegraph 调用多、易丢上下文。**默认按组批处理**：
+
+1. **分组先行**：按接口前缀分组（`/schemeRequirement/*` 一组、`/schemeRequirementSupplier/*` 一组），每组通常对应一个 Controller。
+2. **Controller 一次性探索**：每组只做一次 `codegraph_explore(ControllerName)`，拿到该 Controller 全部方法 + 路由映射（顺带暴露 extends 基类，衔接上方继承路由处理）。
+3. **前端 api 文件一次性读全**：定位到 `src/api/xx.js` 后一次读全文件，建「函数名→path」完整映射表，而非逐函数 grep。
+4. **只对落空接口精检**：批量命中后，仅对未匹配的少数接口做单接口精细搜索（场景二流程）。
+
+> 不只提效，更提准：一次看全兄弟方法，更易发现继承方法与遗漏接口。
+
+---
+
 ## 落锚检索流程
 
 ### 场景一：从业务功能名定位代码
@@ -80,6 +93,16 @@ gitnexus_context({ name: "ServiceImpl", repo: "<仓库名>" })
   → codegraph_callees(handler, projectPath=<后端>)
   → Service 实现
   → grep 兜底（网关裁前缀/路径重写时）
+```
+
+**继承路由处理**（route 索引 + grep `@RequestMapping` **双失效**时——Spring 模板方法/通用 CRUD 基类常见，如 `/start`、`/stop`）：
+```
+接口 path → route 索引/grep 无直接命中
+  → 该 path 前缀对应的 Controller 是否 extends 基类？
+     · codegraph_explore(Controller类名) 看 extends 关系，或 grep "extends.*Controller" 读 Controller 文件头
+  → 定位基类 → grep 基类中该路由方法（如 BaseFlowableController.start/stop）
+  → 基类在本仓源码 → 确证，行内注「继承自 BaseXxx.method()」（不降级）
+  → 基类在依赖包无源码 → 标 ~unresolved
 ```
 
 **前端（grep-led + component 辅助）**：

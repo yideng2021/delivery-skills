@@ -15,7 +15,7 @@ runtime-capture-skill          本 skill（落锚层）            后续独立 
 | | 内容 |
 |---|---|
 | 输入 | `{工作目录}/{name}/` 下 4 件 runtime-capture 产物 + 前后端工程目录 + CodeGraph/GitNexus 索引 |
-| 输出 | `{工作目录}/{name}/{name}_flow-map.md`（精准地图，与上游产物同目录） |
+| 输出 | `docs/runtime-flow/{name}/{name}_flow-map.md`（精准地图，当前根目录下、工作区内） |
 
 ## 核心能力：三证对齐落锚
 

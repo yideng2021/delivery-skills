@@ -1,7 +1,7 @@
 # {业务流程名} — 运行时业务流程精准地图
 
 > 来源：runtime-capture 产物（session_log / records.ts / api_requests / api_details）+ CodeGraph/GitNexus 代码落锚
-> 工作目录：`{工作目录}/{name}/` ｜ 生成时间：{ISO}
+> 产物路径：`docs/runtime-flow/{name}/{name}_flow-map.md` ｜ 来源捕获产物：`{工作目录}/{name}/` ｜ 生成时间：{ISO}
 
 ---
 
@@ -81,5 +81,5 @@ flowchart TD
 
 ## 附：接口总览
 
-> 详见同目录 `{name}_api_requests.txt`（摘要）/ `{name}_api_details.txt`（明细）
+> 详见捕获目录 `{工作目录}/{name}/` 下 `{name}_api_requests.txt`（摘要）/ `{name}_api_details.txt`（明细）
 > 共捕获 {N} 条请求 / {M} 条去重接口
