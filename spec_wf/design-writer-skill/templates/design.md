@@ -1,5 +1,5 @@
 ---
-∂change_name: {change_name}
+change_name: {change_name}
 status: draft
 change_mode: extend            # greenfield | extend | refactor | bugfix；沿用 spec.change_mode
 produced_specs: [specs/{capability}.md]
